@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Complaint Reporting Form</title>
+    <link rel="stylesheet" href="../styles/complaint.css">
+    <script src="../scripts/complaint.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Healthcare Complaint Reporting</h1>
+            <p>Report malpractice in health and administrative services</p>
+            <p class="p1">All reports are confidential and will be reviewed by our investigation team</p>
+        </div>
+
+        <div class="form-section">
+            <form id="complaintForm">
+                <!-- Case Reference (auto-generated, hidden field) -->
+                <input type="hidden" id="caseNumber" name="caseNumber" value="">
+                <input type="hidden" id="timestamp" name="timestamp" value="">
+
+                <!-- Section 1: Complainant Information -->
+                <div class="section-title">👤 Your Information</div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="fullName" class="required">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required 
+                            placeholder="As per identification document">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="relationship" class="required">Relationship to Patient</label>
+                        <select id="relationship" name="relationship" required>
+                            <option value="">Select one...</option>
+                            <option value="self">Self (I am the patient)</option>
+                            <option value="family">Family Member</option>
+                            <option value="legal">Legal Guardian</option>
+                            <option value="advocate">Patient Advocate</option>
+                            <option value="witness">Witness</option>
+                            <option value="staff">Healthcare Staff</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="email" class="required">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                            placeholder="For case updates">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" 
+                            placeholder="With country code">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Contact Method</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="contactEmail" name="contactMethod" value="email" checked>
+                            <label for="contactEmail">Email</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="contactPhone" name="contactMethod" value="phone">
+                            <label for="contactPhone">Phone</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="contactMail" name="contactMethod" value="mail">
+                            <label for="contactMail">Physical Mail</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Incident Details -->
+                <div class="section-title">📋 Incident Details</div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="incidentDate" class="required">Date of Incident</label>
+                        <input type="date" id="incidentDate" name="incidentDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="facilityName" class="required">Healthcare Facility</label>
+                        <input type="text" id="facilityName" name="facilityName" required 
+                            placeholder="Hospital, Clinic, or Office name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="facilityAddress">Facility Address</label>
+                    <input type="text" id="facilityAddress" name="facilityAddress" 
+                        placeholder="Street, City, State">
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintType" class="required">Type of Complaint</label>
+                    <select id="complaintType" name="complaintType" required>
+                        <option value="">Select primary concern...</option>
+                        <optgroup label="Clinical Malpractice">
+                            <option value="misdiagnosis">Misdiagnosis / Delayed Diagnosis</option>
+                            <option value="surgical">Surgical Error</option>
+                            <option value="medication">Medication Error</option>
+                            <option value="treatment">Inappropriate Treatment</option>
+                            <option value="infection">Hospital-acquired Infection</option>
+                        </optgroup>
+                        <optgroup label="Administrative">
+                            <option value="records">Medical Records Error</option>
+                            <option value="billing">Billing / Insurance Issue</option>
+                            <option value="privacy">Privacy / Confidentiality Breach</option>
+                            <option value="access">Denial of Access to Care</option>
+                        </optgroup>
+                        <optgroup label="Patient Rights">
+                            <option value="consent">Lack of Informed Consent</option>
+                            <option value="dignity">Disrespectful Treatment</option>
+                            <option value="discrimination">Discrimination</option>
+                            <option value="abuse">Physical/Verbal Abuse</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="required">Detailed Description</label>
+                    <textarea id="description" name="description" required 
+                        placeholder="Please provide a detailed account of what happened. Include:
+                                    - What occurred
+                                    - Who was involved (staff names/roles if known)
+                                    - When and where it happened
+                                    - Any immediate actions taken
+                                    - How it has affected you/patient">
+                    </textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Severity of Impact</label>
+                    <div class="severity-indicator">
+                        <div class="severity-level" onclick="selectSeverity('low')">
+                            <div class="severity-low">🟢 Low</div>
+                            <small>Minor inconvenience, no lasting impact</small>
+                        </div>
+                        <div class="severity-level" onclick="selectSeverity('medium')">
+                            <div class="severity-medium">🟡 Medium</div>
+                            <small>Temporary harm, required additional treatment</small>
+                        </div>
+                        <div class="severity-level" onclick="selectSeverity('high')">
+                            <div class="severity-high">🔴 High</div>
+                            <small>Serious harm, permanent impact, or fatality</small>
+                        </div>
+                    </div>
+                    <input type="hidden" id="severity" name="severity" value="">
+                </div>
+
+                <!-- Section 3: Supporting Information -->
+                <div class="section-title">📎 Supporting Information</div>
+
+                <div class="form-group">
+                    <label for="involvedParties">Involved Healthcare Providers</label>
+                    <input type="text" id="involvedParties" name="involvedParties" 
+                        placeholder="Names and roles of staff involved (if known)">
+                </div>
+
+                <div class="form-group">
+                    <label for="witnesses">Witnesses</label>
+                    <textarea id="witnesses" name="witnesses" 
+                        placeholder="Names and contact information of witnesses (if applicable)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Has this been reported elsewhere?</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="reportedFacility" name="reportedTo" value="facility">
+                            <label for="reportedFacility">To the facility directly</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="reportedBoard" name="reportedTo" value="board">
+                            <label for="reportedBoard">To medical board</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="reportedPolice" name="reportedTo" value="police">
+                            <label for="reportedPolice">To police/authorities</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="reportedLawyer" name="reportedTo" value="lawyer">
+                            <label for="reportedLawyer">To lawyer/legal</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Supporting Documents</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" name="attachments" multiple 
+                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
+                        <label for="fileInput">📎 Click to upload or drag and drop</label>
+                        <p class="p2">PDF, Images, or Text files (Max 10MB each)</p>
+                    </div>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+
+                <!-- Privacy Notice -->
+                <div class="privacy-notice">
+                    <strong>🔒 Confidentiality Notice:</strong>
+                    <p class="p3">Your information is protected and will only be used for investigation purposes. Case details may be shared with relevant authorities as required by law. You will receive a unique case number for tracking.</p>
+                </div>
+
+                <!-- Consent Checkboxes -->
+                <div class="form-group">
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="consentContact" name="consentContact" required>
+                        <label for="consentContact" class="required">I consent to be contacted regarding this complaint</label>
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="consentAccurate" name="consentAccurate" required>
+                        <label for="consentAccurate" class="required">I confirm that the information provided is accurate to the best of my knowledge</label>
+                    </div>
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="consentTerms" name="consentTerms" required>
+                        <label for="consentTerms" class="required">I agree to the terms of submission and privacy policy</label>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Submit Complaint</button>
+                    <button type="reset" class="btn-reset">Reset Form</button>
+                </div>
+            </form>
+
+            <!-- Success Message (hidden initially) -->
+            <div id="successMessage" class="hidden">
+                <div class="case-number-display">
+                    <h2>✅ Complaint Submitted Successfully</h2>
+                    <p>Your case number is:</p>
+                    <div class="case-number" id="displayCaseNumber"></div>
+                    <p class="p4">Please save this number for future reference.</p>
+                    <p>You will receive a confirmation email with next steps.</p>
+                    <button onclick="resetAndShowForm()">Submit Another Complaint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

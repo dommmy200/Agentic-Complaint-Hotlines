@@ -1,0 +1,51 @@
+{
+  "name": "Healthcare Complaint Intake",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "parameters": {
+        "path": "complaint-received",
+        "method": "POST",
+        "responseMode": "onReceived"
+      }
+    },
+    {
+      "name": "Code - Validate Input",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300],
+      "parameters": {
+        "language": "javascript",
+        "code": "// Copy validation script from scripts/preprocess.md"
+      }
+    },
+    {
+      "name": "AI Agent - Initial Processing",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [650, 300],
+      "parameters": {
+        "model": {
+          "name": "Google Gemini"
+        },
+        "memory": true,
+        "tools": [
+          {
+            "name": "Check Duplicates",
+            "type": "code"
+          }
+        ],
+        "prompt": "You are a healthcare complaint intake specialist..."
+      }
+    },
+    {
+      "name": "Google Sheets - Append",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [850, 300],
+      "parameters": {
+        "operation": "append",
+        "sheetId": "YOUR_SHEET_ID"
+      }
+    }
+  ]
+}

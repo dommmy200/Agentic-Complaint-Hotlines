@@ -1,0 +1,61 @@
+{
+  "project": "Agentic Healthcare Complaint Hotline",
+  "version": "1.0.0",
+  "description": "n8n workflow for collecting and processing healthcare malpractice complaints",
+  "last_updated": "2024-03-15",
+  "architecture": {
+    "overview": "Dual-workflow system separating complaint intake from investigator processing",
+    "workflows": {
+      "complaint-intake": {
+        "purpose": "Receive form submissions, process with AI, store in database",
+        "trigger": "Webhook (complaint form)",
+        "ai_components": [
+          {
+            "name": "Google Gemini Chat Model",
+            "function": "Initial complaint analysis and categorization"
+          },
+          {
+            "name": "Memory",
+            "function": "Maintain context for follow-up questions"
+          },
+          {
+            "name": "Tool",
+            "function": "External data validation and enrichment"
+          }
+        ],
+        "output": "Google Sheets / Database storage"
+      },
+      "investigator-pipeline": {
+        "purpose": "Process complaints for investigation team",
+        "trigger": "Schedule / Manual / Webhook",
+        "ai_components": [
+          {
+            "name": "Google Gemini Chat Model", 
+            "function": "Generate executive summaries and investigation steps"
+          }
+        ],
+        "output": "Email notifications / Investigator dashboard"
+      }
+    },
+    "data_flow": [
+      "User submits form → complaint-intake workflow",
+      "AI processes initial complaint → store in database",
+      "investigator-pipeline reads new complaints → AI generates summaries",
+      "Summaries sent to investigation team"
+    ]
+  },
+  "dependencies": {
+    "n8n_nodes": [
+      "Webhook",
+      "AI Agent",
+      "Google Gemini",
+      "Google Sheets",
+      "Schedule Trigger",
+      "Code"
+    ],
+    "external_services": [
+      "Google Gemini API",
+      "Google Sheets API"
+    ]
+  }
+}

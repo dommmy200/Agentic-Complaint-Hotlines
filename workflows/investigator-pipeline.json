@@ -1,0 +1,53 @@
+{
+  "name": "Investigator Processing Pipeline",
+  "nodes": [
+    {
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [250, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{"hours": 24}]
+        }
+      }
+    },
+    {
+      "name": "Google Sheets - Read New",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [450, 300],
+      "parameters": {
+        "operation": "read",
+        "sheetId": "YOUR_SHEET_ID"
+      }
+    },
+    {
+      "name": "Code - Prepare Summary",
+      "type": "n8n-nodes-base.code",
+      "position": [650, 300],
+      "parameters": {
+        "language": "javascript",
+        "code": "// Copy enrichment script from scripts/preprocess.md"
+      }
+    },
+    {
+      "name": "AI Agent - Generate Summary",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [850, 300],
+      "parameters": {
+        "model": {
+          "name": "Google Gemini"
+        },
+        "prompt": "You are a healthcare investigator reviewing complaints..."
+      }
+    },
+    {
+      "name": "Email - Send to Investigators",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1050, 300],
+      "parameters": {
+        "fromEmail": "complaints@healthcare.gov",
+        "toEmail": "investigation-team@healthcare.gov"
+      }
+    }
+  ]
+}
