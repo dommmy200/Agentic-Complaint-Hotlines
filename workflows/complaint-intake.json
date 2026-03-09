@@ -9,7 +9,15 @@
         "path": "complaint-received",
         "method": "POST",
         "responseMode": "onReceived"
+      },
+      "options": {
+      "responseHeaders": {
+        "Access-Control-Allow-Origin": "https://dommmy200.github.io",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400"
       }
+    }
     },
     {
       "name": "Code - Validate Input",
