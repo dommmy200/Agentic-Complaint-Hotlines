@@ -11,13 +11,13 @@
         "responseMode": "onReceived"
       },
       "options": {
-      "responseHeaders": {
-        "Access-Control-Allow-Origin": "https://dommmy200.github.io",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400"
+        "responseHeaders": {
+          "Access-Control-Allow-Origin": "https://dommmy200.github.io",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400"
+        }
       }
-    }
     },
     {
       "name": "Code - Validate Input",
@@ -29,30 +29,46 @@
       }
     },
     {
-      "name": "AI Agent - Initial Processing",
+      "name": "AI Agent - Complaint Processor",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "position": [650, 300],
       "parameters": {
         "model": {
-          "name": "Google Gemini"
-        },
-        "memory": true,
-        "tools": [
-          {
-            "name": "Check Duplicates",
-            "type": "code"
-          }
-        ],
-        "prompt": "You are a healthcare complaint intake specialist..."
-      }
+        "name": "googleGemini",
+        "projectId": "your-gcp-project",
+        "region": "us-central1",
+        "model": "gemini-2.5-flash"
+        }
+      },
+      "memory": true,
+      "tools": [
+        {
+          "name": "Check Duplicates",
+          "type": "code"
+        }
+      ],
+      "prompt": "You are a healthcare complaint intake assistant. When a user submits a complaint, extract the key information and use the googleSheets tool to store it. Format the data as: caseNumber, timestamp, fullName, email, complaintType, description, severity, facilityName. Also generate a brief AI summary (2-3 sentences) of the complaint for investigators."
     },
     {
-      "name": "Google Sheets - Append",
+      "name": "Google Sheets - Append Complaint",
       "type": "n8n-nodes-base.googleSheets",
       "position": [850, 300],
       "parameters": {
         "operation": "append",
-        "sheetId": "YOUR_SHEET_ID"
+        "sheetId": "1Bc1ltRBGkxuvoayEbIVsMvluv-g3iDFsxqaMhMB4a7s",
+        "sheetName": "Complaints",
+        "columns": {
+          "caseNumber": "={{ $json.caseNumber }}",
+          "timestamp": "={{ $json.timestamp }}",
+          "fullName": "={{ $json.fullName }}",
+          "email": "={{ $json.email }}",
+          "complaintType": "={{ $json.complaintType }}",
+          "description": "={{ $json.description }}",
+          "severity": "={{ $json.severity }}",
+          "facilityName": "={{ $json.facilityName }}",
+          "status": "New",
+          "aiSummary": "={{ $json.aiSummary }}"
+        }
       }
     }
   ]
