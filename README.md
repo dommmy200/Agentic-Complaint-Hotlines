@@ -76,6 +76,6 @@ Each team member has added one of their favorite quotes as part of the project c
 
 ### Herick Guillen
 
->
+> "Goals reflect the desires of our hearts and our vision of what we can accomplish. Through goals and plans, our hopes are transformed into action. Goal setting and planning are acts of faith." -Preach My Gospel, Chapter 8
 
 ---
