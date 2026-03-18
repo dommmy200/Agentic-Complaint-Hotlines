@@ -1,0 +1,221 @@
+<!--
+    components/form.html
+    =====================================================================
+    Complaint form component — loaded dynamically into #form-container
+    by scripts/complaint.js.
+
+    Fields (from requirements):
+      Hidden:     submissionDateTime, caseNumber
+      Section 1:  anonymous (radio — drives conditional visibility)
+      Section 2:  fullName, personalId, phone, email, followUp
+                  (all hidden when anonymous = yes)
+      Section 3:  incidentDate*, incidentTime, healthFacility*,
+                  department, issueType, staffInvolved
+      Section 4:  complaintDetails*, evidenceFiles
+    =====================================================================
+-->
+
+<form id="complaintForm" novalidate enctype="multipart/form-data">
+
+    <!-- Hidden system fields -->
+    <input type="hidden" id="caseNumber"         name="caseNumber">
+    <input type="hidden" id="submissionDateTime" name="submissionDateTime">
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — ANONYMITY
+    ════════════════════════════════════════ -->
+    <div class="form-block">
+        <p class="form-block-label">Your Identity</p>
+        <p class="form-block-hint">
+            You may submit this complaint anonymously. If you choose to identify
+            yourself, your details are only visible to investigators.
+        </p>
+        <div class="radio-group">
+            <label class="radio-label">
+                <input type="radio" name="anonymous" id="anonYes" value="yes" checked>
+                <span class="radio-dot"></span>
+                Keep me anonymous
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="anonymous" id="anonNo" value="no">
+                <span class="radio-dot"></span>
+                Include my personal details
+            </label>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 — PERSONAL INFORMATION
+         Hidden entirely when anonymous = yes
+    ════════════════════════════════════════ -->
+    <div class="form-block hidden" id="personalFields">
+        <p class="form-block-label">
+            Personal Information
+            <span class="opt-tag">— all fields optional</span>
+        </p>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName"
+                    placeholder="Your full name" autocomplete="name">
+            </div>
+            <div class="field">
+                <label for="personalId">ID / Patient Number</label>
+                <input type="text" id="personalId" name="personalId"
+                    placeholder="e.g. 12345678">
+            </div>
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone"
+                    placeholder="e.g. +1 555 000 1234" autocomplete="tel">
+            </div>
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                    placeholder="For case updates" autocomplete="email">
+                <span class="field-hint">Enter an email to receive your case number by email.</span>
+            </div>
+        </div>
+
+        <div class="field checkbox-field">
+            <label class="checkbox-label disabled" id="followUpLabel">
+                <input type="checkbox" id="followUp" name="followUp" value="yes" disabled>
+                <span class="checkbox-box"></span>
+                Contact me with updates on this complaint
+            </label>
+            <span class="field-hint" id="followUpHint">
+                Enter an email address above to enable this option.
+            </span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 — INCIDENT DETAILS
+    ════════════════════════════════════════ -->
+    <div class="form-block">
+        <p class="form-block-label">Incident Details</p>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="incidentDate">
+                    Date of Incident <span class="req">*</span>
+                </label>
+                <input type="date" id="incidentDate" name="incidentDate" required>
+                <span class="field-error" id="errDate"></span>
+            </div>
+            <div class="field">
+                <label for="incidentTime">
+                    Time of Incident
+                    <span class="opt-tag">optional</span>
+                </label>
+                <input type="time" id="incidentTime" name="incidentTime">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="healthFacility">
+                Health Facility <span class="req">*</span>
+            </label>
+            <input type="text" id="healthFacility" name="healthFacility"
+                placeholder="e.g. City General Hospital" required>
+            <span class="field-error" id="errFacility"></span>
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="department">
+                    Department
+                    <span class="opt-tag">optional</span>
+                </label>
+                <input type="text" id="department" name="department"
+                    placeholder="e.g. Emergency Room, Billing">
+            </div>
+            <div class="field">
+                <label for="staffInvolved">
+                    Staff Involved
+                    <span class="opt-tag">optional</span>
+                </label>
+                <input type="text" id="staffInvolved" name="staffInvolved"
+                    placeholder="e.g. Dr. Smith, Nurse on duty">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="issueType">
+                Issue Type
+                <span class="opt-tag">optional — AI will classify if left blank</span>
+            </label>
+            <select id="issueType" name="issueType">
+                <option value="">Let the AI classify this&hellip;</option>
+                <optgroup label="Health">
+                    <option value="clinical-care">Clinical Care</option>
+                    <option value="medical-staff">Medical Staff Conduct</option>
+                    <option value="patient-safety">Patient Safety</option>
+                    <option value="medications">Medications</option>
+                </optgroup>
+                <optgroup label="Administrative">
+                    <option value="billing">Billing</option>
+                    <option value="scheduling">Scheduling / Wait Times</option>
+                    <option value="admin-staff">Administrative Staff Conduct</option>
+                    <option value="facility">Facility Management</option>
+                </optgroup>
+            </select>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4 — COMPLAINT
+    ════════════════════════════════════════ -->
+    <div class="form-block">
+        <p class="form-block-label">Complaint</p>
+
+        <div class="field">
+            <label for="complaintDetails">
+                What happened? <span class="req">*</span>
+            </label>
+            <textarea id="complaintDetails" name="complaintDetails" rows="7" required
+                placeholder="Describe the incident — who was involved, what occurred, when it happened, and how it affected you. Include any relevant context. The more detail you provide, the better we can assist."></textarea>
+            <div class="char-row">
+                <span class="char-count" id="charCount">0 characters</span>
+                <span class="char-min">30 minimum</span>
+            </div>
+            <span class="field-error" id="errDetails"></span>
+        </div>
+
+        <div class="field">
+            <label for="evidenceFiles">
+                Supporting Evidence
+                <span class="opt-tag">optional</span>
+            </label>
+            <div class="file-drop-zone" id="fileDropZone">
+                <input type="file" id="evidenceFiles" name="evidenceFiles"
+                    multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.mp4,.mov">
+                <div class="file-drop-inner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                    </svg>
+                    <span>Drag files here or <strong>browse</strong></span>
+                    <span class="file-types">PDF, JPG, PNG, DOC, MP4 &middot; Max 10 MB each</span>
+                </div>
+            </div>
+            <ul class="file-list" id="fileList"></ul>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         SUBMIT
+    ════════════════════════════════════════ -->
+    <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Submit Complaint</span>
+        <span class="btn-spinner"></span>
+    </button>
+    <p class="form-note">
+        By submitting you confirm the information is accurate to the best of your knowledge.
+    </p>
+
+</form>

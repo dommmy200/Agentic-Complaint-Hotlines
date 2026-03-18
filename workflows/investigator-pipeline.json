@@ -1,53 +1,103 @@
 {
-  "name": "Investigator Processing Pipeline",
+  "name": "Pipeline 2 — Daily Investigator Summary",
+  "description": "Midnight schedule → Read new complaints → Aggregate → AI summary → Email supervisor → Update status",
   "nodes": [
     {
-      "name": "Schedule Trigger",
+      "id": "node-schedule",
+      "name": "Schedule Trigger — Midnight Daily",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "position": [250, 300],
+      "position": [240, 300],
       "parameters": {
         "rule": {
-          "interval": [{"hours": 24}]
+          "interval": [{ "field": "cronExpression", "expression": "0 0 * * *" }]
         }
       }
     },
+
     {
-      "name": "Google Sheets - Read New",
+      "id": "node-read-sheets",
+      "name": "Google Sheets — Read New Complaints",
       "type": "n8n-nodes-base.googleSheets",
-      "position": [450, 300],
+      "position": [460, 300],
       "parameters": {
-        "operation": "read",
-        "sheetId": "YOUR_SHEET_ID"
+        "operation":  "getAll",
+        "documentId": "1Bc1ltRBGkxuvoayEbIVsMvluv-g3iDFsxqaMhMB4a7s",
+        "sheetName":  "Complaints",
+        "filters": {
+          "conditions": [{ "keyName": "status", "keyValue": "New" }]
+        },
+        "options": { "returnAllMatches": true }
       }
     },
+
     {
-      "name": "Code - Prepare Summary",
+      "id": "node-aggregate",
+      "name": "Code — Aggregate & Filter Last 24h",
       "type": "n8n-nodes-base.code",
-      "position": [650, 300],
+      "position": [680, 300],
       "parameters": {
         "language": "javascript",
-        "code": "// Copy enrichment script from scripts/preprocess.md"
+        "code": "// ── Filter to last 24 hours and build aggregate stats ──────────\n// Paste the full script from preprocess.md Section 2\n\nconst rows    = $input.all().map(item => item.json);\nconst cutoff  = new Date(Date.now() - 24 * 60 * 60 * 1000);\nconst recent  = rows.filter(r => r.submissionDateTime && new Date(r.submissionDateTime) >= cutoff);\n\nif (recent.length === 0) {\n  // No new complaints — signal the workflow to stop gracefully\n  return [{ json: { noComplaints: true, generatedAt: new Date().toISOString() } }];\n}\n\n// ── Aggregate counts ──────────────────────────────────────────\nconst byCategory  = {};\nconst byFacility  = {};\nconst byPriority  = {};\nconst byIssueType = {};\n\nrecent.forEach(function (r) {\n  const cat  = r.aiCategory    || 'unclassified';\n  const fac  = r.healthFacility || 'Unknown';\n  const pri  = r.priority       || 'medium';\n  const type = r.issueType      || 'unspecified';\n\n  byCategory[cat]   = (byCategory[cat]   || 0) + 1;\n  byFacility[fac]   = (byFacility[fac]   || 0) + 1;\n  byPriority[pri]   = (byPriority[pri]   || 0) + 1;\n  byIssueType[type] = (byIssueType[type] || 0) + 1;\n});\n\n// ── Top 3 sample summaries for AI context ────────────────────\nconst samples = recent\n  .filter(r => r.priority === 'high')\n  .slice(0, 5)\n  .concat(recent.filter(r => r.priority !== 'high').slice(0, 3))\n  .map(r => ({\n    caseNumber:    r.caseNumber,\n    facility:      r.healthFacility,\n    category:      r.aiCategory,\n    priority:      r.priority,\n    aiSummary:     r.aiSummary,\n    missingFields: r.missingFields\n  }));\n\nreturn [{\n  json: {\n    totalComplaints:  recent.length,\n    period:           'Last 24 hours — ' + new Date().toISOString(),\n    byCategory,\n    byFacility,\n    byPriority,\n    byIssueType,\n    highPriorityCount: byPriority['high'] || 0,\n    caseNumbers:      recent.map(r => r.caseNumber),\n    sampleCases:      samples,\n    noComplaints:     false\n  }\n}];"
       }
     },
+
     {
-      "name": "AI Agent - Generate Summary",
+      "id": "node-ai-summary",
+      "name": "AI Agent — Generate Daily Summary",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "position": [850, 300],
+      "position": [900, 300],
       "parameters": {
-        "model": {
-          "name": "Google Gemini"
-        },
-        "prompt": "You are a healthcare investigator reviewing complaints..."
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json) }}",
+        "systemMessage": "You are an investigations supervisor for a government health complaint oversight platform.\n\nYou will receive aggregated complaint statistics for the past 24 hours as JSON.\n\nWrite a professional executive summary email body (plain text, no HTML).\n\nInclude ALL of the following sections:\n\n1. DAILY OVERVIEW\n   - Total complaints received\n   - Breakdown by category (health vs administrative)\n   - Breakdown by priority (high / medium / low)\n   - High-priority count highlighted prominently\n\n2. TOP FACILITIES BY VOLUME\n   - List facilities with complaint counts\n\n3. ISSUE TYPE BREAKDOWN\n   - List issue types with counts\n\n4. CASE HIGHLIGHTS (from sampleCases)\n   - For each high-priority case: case number, facility, one-sentence summary\n   - Flag any cases with missingFields that need follow-up\n\n5. RECOMMENDED ACTIONS\n   - 2-3 specific, actionable recommendations based on today's patterns\n\nTone: Professional, factual, concise. Maximum 500 words.\nDo NOT include any JSON in the output — write readable prose with clear section headers.",
+        "options": {}
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Google Gemini API"
+        }
       }
     },
+
     {
-      "name": "Email - Send to Investigators",
-      "type": "n8n-nodes-base.emailSend",
-      "position": [1050, 300],
+      "id": "node-email-supervisor",
+      "name": "Gmail — Email Supervisor",
+      "type": "n8n-nodes-base.gmail",
+      "position": [1120, 300],
       "parameters": {
-        "fromEmail": "complaints@healthcare.gov",
-        "toEmail": "investigation-team@healthcare.gov"
+        "operation": "send",
+        "sendTo":    "supervisor@yourdomain.com",
+        "subject":   "Daily Complaint Summary — {{ new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'}) }}  |  {{ $('Code — Aggregate & Filter Last 24h').first().json.totalComplaints }} cases  |  {{ $('Code — Aggregate & Filter Last 24h').first().json.highPriorityCount }} high priority",
+        "emailType": "text",
+        "message":   "={{ $json.output || $json.text }}"
+      }
+    },
+
+    {
+      "id": "node-update-status",
+      "name": "Google Sheets — Mark Reviewed",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [1340, 300],
+      "parameters": {
+        "operation":     "update",
+        "documentId":    "1Bc1ltRBGkxuvoayEbIVsMvluv-g3iDFsxqaMhMB4a7s",
+        "sheetName":     "Complaints",
+        "columnToMatch": "caseNumber",
+        "fieldsToUpdate": {
+          "status":     "Reviewed",
+          "reviewedAt": "={{ new Date().toISOString() }}"
+        }
       }
     }
-  ]
+  ],
+
+  "connections": {
+    "Schedule Trigger — Midnight Daily":    { "main": [[{ "node": "Google Sheets — Read New Complaints",    "type": "main", "index": 0 }]] },
+    "Google Sheets — Read New Complaints":  { "main": [[{ "node": "Code — Aggregate & Filter Last 24h",     "type": "main", "index": 0 }]] },
+    "Code — Aggregate & Filter Last 24h":   { "main": [[{ "node": "AI Agent — Generate Daily Summary",      "type": "main", "index": 0 }]] },
+    "AI Agent — Generate Daily Summary":    { "main": [[{ "node": "Gmail — Email Supervisor",               "type": "main", "index": 0 }]] },
+    "Gmail — Email Supervisor":             { "main": [[{ "node": "Google Sheets — Mark Reviewed",          "type": "main", "index": 0 }]] }
+  }
 }

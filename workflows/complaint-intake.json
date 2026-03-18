@@ -1,75 +1,141 @@
 {
-  "name": "Healthcare Complaint Intake",
+  "name": "Pipeline 1 — Complaint Intake",
+  "description": "Webhook → Validate → AI Process → Google Sheets → Gmail confirmation",
   "nodes": [
     {
-      "name": "Webhook",
+      "id": "node-webhook",
+      "name": "Webhook — Receive Complaint",
       "type": "n8n-nodes-base.webhook",
-      "position": [250, 300],
+      "position": [240, 300],
       "parameters": {
         "path": "complaint-received",
         "method": "POST",
-        "responseMode": "onReceived"
-      },
-      "options": {
-        "responseHeaders": {
-          "Access-Control-Allow-Origin": "https://dommmy200.github.io",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Max-Age": "86400"
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin",  "value": "https://dommmy200.github.io" },
+              { "name": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type" },
+              { "name": "Access-Control-Max-Age",       "value": "86400" }
+            ]
+          }
         }
       }
     },
+
     {
-      "name": "Code - Validate Input",
+      "id": "node-validate",
+      "name": "Code — Validate & Structure",
       "type": "n8n-nodes-base.code",
-      "position": [450, 300],
+      "position": [460, 300],
       "parameters": {
         "language": "javascript",
-        "code": "// Copy validation script from scripts/preprocess.md"
+        "code": "// ── Validate & structure incoming complaint payload ────────────\n// Paste the full script from preprocess.md Section 1\n\nconst raw = $input.first().json;\n\n// Required field check\nconst required = ['incidentDate', 'healthFacility', 'complaintDetails'];\nconst missing  = required.filter(f => !raw[f] || raw[f].toString().trim() === '');\nif (missing.length > 0) {\n  throw new Error('Missing required fields: ' + missing.join(', '));\n}\n\n// complaintDetails minimum length\nif (raw.complaintDetails.trim().length < 30) {\n  throw new Error('Complaint details too short (minimum 30 characters).');\n}\n\n// Email format validation (only if email provided)\nif (raw.email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(raw.email)) {\n  throw new Error('Invalid email format: ' + raw.email);\n}\n\n// Date not in future\nconst incidentDate = new Date(raw.incidentDate);\nif (incidentDate > new Date()) {\n  throw new Error('Incident date cannot be in the future.');\n}\n\n// Pre-map issueType to broader category (assists AI)\nconst categoryMap = {\n  'clinical-care':  'health', 'medical-staff': 'health',\n  'patient-safety': 'health', 'medications':   'health',\n  'billing':        'administrative', 'scheduling':  'administrative',\n  'admin-staff':    'administrative', 'facility':    'administrative'\n};\nconst preCategory = categoryMap[raw.issueType] || 'unknown';\n\nreturn [{\n  json: {\n    ...raw,\n    preCategory,\n    processedAt: new Date().toISOString()\n  }\n}];"
       }
     },
+
     {
-      "name": "AI Agent - Complaint Processor",
+      "id": "node-ai-agent",
+      "name": "AI Agent — Complaint Processor",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "position": [650, 300],
+      "position": [680, 300],
       "parameters": {
-        "model": {
-        "name": "googleGemini",
-        "projectId": "your-gcp-project",
-        "region": "us-central1",
-        "model": "gemini-2.5-flash"
-        }
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.complaintDetails }}",
+        "systemMessage": "You are a healthcare complaint intake assistant for a government oversight platform.\n\nYou will receive a complaint submission. Perform EXACTLY these four tasks:\n\n1. REFORMULATE: Rewrite the complaint in clear, formal English. Preserve all meaning. If the original is already clear, keep it as-is.\n\n2. CLASSIFY: Determine whether this is a 'health' or 'administrative' complaint.\n   - Health: clinical care, medical staff conduct, patient safety, medications.\n   - Administrative: billing, scheduling, wait times, staff conduct, facility management.\n   - If the submitter specified issueType, use that as a strong hint.\n\n3. DETECT GAPS: Identify any missing critical information that would hinder investigation.\n   Examples: no specific date, no named department, vague harm description, no staff name when staff conduct is alleged.\n   Return an empty array [] if the complaint is complete.\n\n4. SCORE PRIORITY: Assign a priority of 'low', 'medium', or 'high'.\n   - high: imminent patient harm, ongoing abuse, medication errors, patient safety risk.\n   - medium: billing disputes, scheduling failures, delayed care, staff misconduct.\n   - low: facility maintenance, general dissatisfaction, minor administrative issues.\n\nRespond ONLY with a valid JSON object. No markdown, no code fences, no extra text.\n\n{\n  \"reformulated\": \"<clean formal rewrite>\",\n  \"category\": \"health\" | \"administrative\",\n  \"missingFields\": [\"<field1>\", \"<field2>\"],\n  \"priority\": \"low\" | \"medium\" | \"high\",\n  \"aiSummary\": \"<2-3 sentence summary for investigators>\"\n}",
+        "options": {}
       },
-      "memory": true,
-      "tools": [
-        {
-          "name": "Check Duplicates",
-          "type": "code"
-        }
-      ],
-      "prompt": "You are a healthcare complaint intake assistant. When a user submits a complaint, extract the key information and use the googleSheets tool to store it. Format the data as: caseNumber, timestamp, fullName, email, complaintType, description, severity, facilityName. Also generate a brief AI summary (2-3 sentences) of the complaint for investigators."
-    },
-    {
-      "name": "Google Sheets - Append Complaint",
-      "type": "n8n-nodes-base.googleSheets",
-      "position": [850, 300],
-      "parameters": {
-        "operation": "append",
-        "sheetId": "1Bc1ltRBGkxuvoayEbIVsMvluv-g3iDFsxqaMhMB4a7s",
-        "sheetName": "Complaints",
-        "columns": {
-          "caseNumber": "={{ $json.caseNumber }}",
-          "timestamp": "={{ $json.timestamp }}",
-          "fullName": "={{ $json.fullName }}",
-          "email": "={{ $json.email }}",
-          "complaintType": "={{ $json.complaintType }}",
-          "description": "={{ $json.description }}",
-          "severity": "={{ $json.severity }}",
-          "facilityName": "={{ $json.facilityName }}",
-          "status": "New",
-          "aiSummary": "={{ $json.aiSummary }}"
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Google Gemini API"
         }
       }
+    },
+
+    {
+      "id": "node-json-parser",
+      "name": "Code — Parse AI JSON Output",
+      "type": "n8n-nodes-base.code",
+      "position": [900, 300],
+      "parameters": {
+        "language": "javascript",
+        "code": "// Parse AI Agent output and merge with original complaint fields\nconst original = $('Code — Validate & Structure').first().json;\nconst aiRaw    = $input.first().json.output || $input.first().json.text || '';\n\nlet aiResult = {};\ntry {\n  // Strip any accidental markdown fences before parsing\n  const cleaned = aiRaw.replace(/```json|```/g, '').trim();\n  aiResult = JSON.parse(cleaned);\n} catch (e) {\n  // Fallback — AI output could not be parsed; log and continue\n  console.error('AI JSON parse error:', e.message);\n  aiResult = {\n    reformulated:  original.complaintDetails,\n    category:      original.preCategory !== 'unknown' ? original.preCategory : 'unclassified',\n    missingFields: [],\n    priority:      'medium',\n    aiSummary:     'AI processing failed — manual review required.'\n  };\n}\n\nreturn [{\n  json: {\n    // Identity fields\n    caseNumber:         original.caseNumber,\n    submissionDateTime: original.submissionDateTime,\n    anonymous:          original.anonymous,\n    fullName:           original.fullName          || '',\n    personalId:         original.personalId        || '',\n    phone:              original.phone             || '',\n    email:              original.email             || '',\n    followUp:           original.followUp          || 'no',\n    // Incident fields\n    incidentDate:       original.incidentDate,\n    incidentTime:       original.incidentTime      || '',\n    healthFacility:     original.healthFacility,\n    department:         original.department        || '',\n    issueType:          original.issueType         || '',\n    staffInvolved:      original.staffInvolved     || '',\n    // Complaint\n    complaintDetails:   original.complaintDetails,\n    // AI output\n    reformulated:       aiResult.reformulated      || original.complaintDetails,\n    aiCategory:         aiResult.category          || 'unclassified',\n    missingFields:      (aiResult.missingFields    || []).join(', '),\n    priority:           aiResult.priority          || 'medium',\n    aiSummary:          aiResult.aiSummary         || '',\n    // Tracking\n    status:             'New',\n    processedAt:        original.processedAt\n  }\n}];"
+      }
+    },
+
+    {
+      "id": "node-sheets",
+      "name": "Google Sheets — Append Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [1120, 300],
+      "parameters": {
+        "operation":   "append",
+        "documentId":  "1Bc1ltRBGkxuvoayEbIVsMvluv-g3iDFsxqaMhMB4a7s",
+        "sheetName":   "Complaints",
+        "dataMode":    "autoMapInputData",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "caseNumber":         "={{ $json.caseNumber }}",
+            "submissionDateTime": "={{ $json.submissionDateTime }}",
+            "anonymous":          "={{ $json.anonymous }}",
+            "fullName":           "={{ $json.fullName }}",
+            "personalId":         "={{ $json.personalId }}",
+            "phone":              "={{ $json.phone }}",
+            "email":              "={{ $json.email }}",
+            "followUp":           "={{ $json.followUp }}",
+            "incidentDate":       "={{ $json.incidentDate }}",
+            "incidentTime":       "={{ $json.incidentTime }}",
+            "healthFacility":     "={{ $json.healthFacility }}",
+            "department":         "={{ $json.department }}",
+            "issueType":          "={{ $json.issueType }}",
+            "staffInvolved":      "={{ $json.staffInvolved }}",
+            "complaintDetails":   "={{ $json.complaintDetails }}",
+            "reformulated":       "={{ $json.reformulated }}",
+            "aiCategory":         "={{ $json.aiCategory }}",
+            "missingFields":      "={{ $json.missingFields }}",
+            "priority":           "={{ $json.priority }}",
+            "aiSummary":          "={{ $json.aiSummary }}",
+            "status":             "New",
+            "processedAt":        "={{ $json.processedAt }}"
+          }
+        }
+      }
+    },
+
+    {
+      "id": "node-gmail",
+      "name": "Gmail — User Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "position": [1340, 300],
+      "parameters": {
+        "operation": "send",
+        "sendTo":    "={{ $json.email }}",
+        "subject":   "Complaint Received — Case {{ $json.caseNumber }}",
+        "emailType": "text",
+        "message":   "Dear {{ $json.fullName || 'Complainant' }},\n\nYour complaint has been successfully received.\n\nCase Number : {{ $json.caseNumber }}\nSubmitted   : {{ $json.submissionDateTime }}\nFacility    : {{ $json.healthFacility }}\nPriority    : {{ $json.priority }}\n\nOur investigation team will review your case within 72 hours.\nPlease keep your case number for reference.\n\n— SSCS Investigation Team"
+      },
+      "executeIf": "={{ $json.email !== '' && $json.anonymous === 'no' }}"
     }
+  ],
+
+  "connections": {
+    "Webhook — Receive Complaint":    { "main": [[{ "node": "Code — Validate & Structure",    "type": "main", "index": 0 }]] },
+    "Code — Validate & Structure":    { "main": [[{ "node": "AI Agent — Complaint Processor", "type": "main", "index": 0 }]] },
+    "AI Agent — Complaint Processor": { "main": [[{ "node": "Code — Parse AI JSON Output",    "type": "main", "index": 0 }]] },
+    "Code — Parse AI JSON Output":    { "main": [[{ "node": "Google Sheets — Append Row",     "type": "main", "index": 0 }]] },
+    "Google Sheets — Append Row":     { "main": [[{ "node": "Gmail — User Confirmation",      "type": "main", "index": 0 }]] }
+  },
+
+  "_googleSheetsColumns": [
+    "caseNumber", "submissionDateTime", "anonymous", "fullName", "personalId",
+    "phone", "email", "followUp", "incidentDate", "incidentTime",
+    "healthFacility", "department", "issueType", "staffInvolved",
+    "complaintDetails", "reformulated", "aiCategory", "missingFields",
+    "priority", "aiSummary", "status", "processedAt"
   ]
 }
