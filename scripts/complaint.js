@@ -67,9 +67,18 @@ if (form) {
     //     timestamp:   new Date().toISOString(),
     //   })
     // });
+    const payload = {
+        caseNumber,
+        fullName:    document.getElementById('fullName').value,
+        email:       document.getElementById('email').value,
+        description: document.getElementById('description').value,
+        timestamp:   new Date().toISOString(),
+    }
     // ── Send to n8n Webhook ──────────────────────────
         try {
-            const response = await fetch('https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da', {
+            // https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258
+            // https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da
+            const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -130,10 +139,16 @@ if (copyrightEl) {
 // ── Smooth scroll for all anchor links ─────────────
 document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
-    }
+        const href = this.getAttribute('href');
+        // Get the href attribute
+        if (href === '#') { // Check if href is just '#'
+            e.preventDefault();
+            return; // Exit the function
+        }
+        const target = document.querySelector(href);
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 });
