@@ -4,16 +4,16 @@ const navLinks  = document.querySelector('.nav-links');
 
 if (navToggle) {
     navToggle.addEventListener('click', function () {
-        navToggle.classList.toggle('open');
-        navLinks.classList.toggle('open');});
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+    });
 
-  // Close menu when a link is clicked
-navLinks.querySelectorAll('a').forEach(function (link) {
+    navLinks.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () {
         navToggle.classList.remove('open');
         navLinks.classList.remove('open');
     });
-});
+    });
 }
 
 // ── Case number generator ───────────────────────────
