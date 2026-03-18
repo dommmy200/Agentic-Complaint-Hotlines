@@ -51,19 +51,6 @@ if (form) {
     document.getElementById('caseNumber').value = caseNumber;
     openModal(caseNumber);
 
-<<<<<<< Updated upstream
-            try {
-                // Submit to n8n webhook(https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da)
-                const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da', {
-                    method: 'POST',
-                    mode: 'cors',  // Explicitly set CORS mode
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                    credentials: 'omit'  // Don't send cookies for cross-origin
-                });
-=======
     // TODO: Send form data to n8n API endpoint
     // fetch('/api/complaint', {
     //   method: 'POST',
@@ -78,7 +65,6 @@ if (form) {
     // });
     });
 }
->>>>>>> Stashed changes
 
 // Submit another — reset form and close modal
 if (modalNewBtn) {
