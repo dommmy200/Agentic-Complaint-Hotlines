@@ -1,146 +1,114 @@
+// ── Hamburger menu ──────────────────────────────────
+const navToggle = document.getElementById('navToggle');
+const navLinks  = document.querySelector('.nav-links');
 
-        // Generate case number on load
-        function generateCaseNumber() {
-            const date = new Date();
-            const year = date.getFullYear().toString().slice(-2);
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            return `HC${year}${month}${day}-${random}`;
-        }
+if (navToggle) {
+    navToggle.addEventListener('click', function () {
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+    });
 
-        // Set initial values
-        document.getElementById('caseNumber').value = generateCaseNumber();
-        document.getElementById('timestamp').value = new Date().toISOString();
+    navLinks.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+        navToggle.classList.remove('open');
+        navLinks.classList.remove('open');
+    });
+    });
+}
 
-        // Severity selection
-        function selectSeverity(level) {
-            document.querySelectorAll('.severity-level').forEach(el => {
-                el.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            document.getElementById('severity').value = level;
-        }
+// ── Case number generator ───────────────────────────
+function generateCaseNumber() {
+    const d   = new Date();
+    const yr  = d.getFullYear().toString().slice(-2);
+    const mo  = String(d.getMonth() + 1).padStart(2, '0');
+    const rnd = Math.floor(10000 + Math.random() * 90000);
+    return 'SSCS-' + yr + mo + '-' + rnd;
+}
 
-        // File upload handling
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = '';
-            
-            Array.from(this.files).forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <span>📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
-                    <span class="remove-file" onclick="removeFile(${index})">✕</span>
-                `;
-                fileList.appendChild(fileItem);
-            });
-        });
+// ── Complaint form submission ───────────────────────
+const form         = document.getElementById('complaintForm');
+const popupOverlay = document.getElementById('popupOverlay');
+const caseDisplay  = document.getElementById('caseDisplay');
+const popupNewBtn  = document.getElementById('popupNewBtn');
+const popupHomeBtn = document.getElementById('popupHomeBtn');
 
-        // Remove file function
-        function removeFile(index) {
-            const dt = new DataTransfer();
-            const input = document.getElementById('fileInput');
-            
-            Array.from(input.files).forEach((file, i) => {
-                if (i !== index) dt.items.add(file);
-            });
-            
-            input.files = dt.files;
-            
-            // Refresh file list
-            const event = new Event('change');
-            input.dispatchEvent(event);
-        }
+function openPopup(caseNumber) {
+    document.getElementById('caseNumber').value = caseNumber;
+    popupOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+}
 
-        // Form submission
-        document.getElementById('complaintForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+function closePopup() {
+    popupOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+}
 
-            // Validate severity selection
-            if (!document.getElementById('severity').value) {
-                alert('Please indicate the severity of the incident');
-                return;
-            }
+if (form) {
+    form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-            // Collect form data
-            const formData = {
-                caseNumber: document.getElementById('caseNumber').value,
-                timestamp: document.getElementById('timestamp').value,
-                fullName: document.getElementById('fullName').value,
-                relationship: document.getElementById('relationship').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                contactMethod: document.querySelector('input[name="contactMethod"]:checked').value,
-                incidentDate: document.getElementById('incidentDate').value,
-                facilityName: document.getElementById('facilityName').value,
-                facilityAddress: document.getElementById('facilityAddress').value,
-                complaintType: document.getElementById('complaintType').value,
-                description: document.getElementById('description').value,
-                severity: document.getElementById('severity').value,
-                involvedParties: document.getElementById('involvedParties').value,
-                witnesses: document.getElementById('witnesses').value,
-                reportedTo: Array.from(document.querySelectorAll('input[name="reportedTo"]:checked')).map(cb => cb.value),
-                consentContact: document.getElementById('consentContact').checked,
-                consentAccurate: document.getElementById('consentAccurate').checked,
-                consentTerms: document.getElementById('consentTerms').checked,
-                // File attachments would need special handling (FormData for actual upload)
-                attachments: Array.from(document.getElementById('fileInput').files).map(f => f.name)
-            };
+    const caseNumber = generateCaseNumber();
+    document.getElementById('caseNumber').value = caseNumber;
+    openPopup(caseNumber);
 
-            try {
-                // Submit to n8n webhook(https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da)
-                // Submit to n8n webhook(https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258) -latest
-                const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
-                    method: 'POST',
-                    mode: 'cors',  // Explicitly set CORS mode
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                    credentials: 'omit'  // Don't send cookies for cross-origin
-                });
+    // TODO: Send form data to n8n API endpoint
+    // fetch('/api/complaint', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     caseNumber,
+    //     fullName:    document.getElementById('fullName').value,
+    //     email:       document.getElementById('email').value,
+    //     description: document.getElementById('description').value,
+    //     timestamp:   new Date().toISOString(),
+    //   })
+    // });
+    });
+}
 
-                if (response.ok) {
-                    const result = await response.json();
-                    
-                    // Show success message
-                    document.getElementById('complaintForm').classList.add('hidden');
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    document.getElementById('displayCaseNumber').textContent = formData.caseNumber;
-                    
-                    // Optional: Send email confirmation via n8n
-                } else {
-                    throw new Error('Submission failed');
-                }
-            } catch (error) {
-                alert('There was an error submitting your complaint. Please try again or contact support.');
-                console.error('Submission error:', error);
-            }
-        });
+// Submit another — reset form and close popup
+if (popupNewBtn) {
+    popupNewBtn.addEventListener('click', function () {
+    form.reset();
+    closePopup();
+    document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
+    });
+}
 
-        // Reset form
-        function resetAndShowForm() {
-            document.getElementById('complaintForm').reset();
-            document.getElementById('complaintForm').classList.remove('hidden');
-            document.getElementById('successMessage').classList.add('hidden');
-            
-            // Generate new case number
-            document.getElementById('caseNumber').value = generateCaseNumber();
-            document.getElementById('timestamp').value = new Date().toISOString();
-            
-            // Clear severity selection
-            document.querySelectorAll('.severity-level').forEach(el => {
-                el.classList.remove('selected');
-            });
-            
-            // Clear file list
-            document.getElementById('fileList').innerHTML = '';
-            document.getElementById('fileInput').value = '';
-        }
+// Back to home — close popup and scroll to top
+if (popupHomeBtn) {
+    popupHomeBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    form.reset();
+    closePopup();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
-        // Make functions globally available
-        window.selectSeverity = selectSeverity;
-        window.removeFile = removeFile;
-        window.resetAndShowForm = resetAndShowForm;
+// Close popup if user clicks the dark backdrop
+if (popupOverlay) {
+    popupOverlay.addEventListener('click', function (e) {
+    if (e.target === popupOverlay) closePopup();
+    });
+}
+
+// ── Auto-update copyright year ─────────────────────
+const copyrightEl = document.getElementById('copyright');
+if (copyrightEl) {
+    copyrightEl.textContent = '© ' + new Date().getFullYear() + ' Social Security Complaint Site. All rights reserved.';
+}
+
+// ── Smooth scroll for all anchor links ─────────────
+document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+    }
+    });
+});
