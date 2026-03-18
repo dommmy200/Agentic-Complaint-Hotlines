@@ -1,251 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthcare Complaint Reporting Form</title>
+    <title>SSCS — Social Security Complaint Site</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./styles/complaint.css">
-    <script src="./scripts/complaint.js" defer></script>
+    <!-- Icons sourced from Heroicons (https://heroicons.com) — MIT License -->
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏥 Healthcare Complaint Reporting</h1>
-            <p>Report malpractice in health and administrative services</p>
-            <p class="p1">All reports are confidential and will be reviewed by our investigation team</p>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="logo">
+                <div class="logo-mark">SS</div>
+                <div class="logo-text">
+                    <strong>SSCS</strong>
+                    <span>Social Security Complaint Site</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#complaint">File a Complaint</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="admin.html" class="btn-login">Admin Login</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
+    </nav>
 
-        <div class="form-section">
-            <form id="complaintForm">
-                <!-- Case Reference (auto-generated, hidden field) -->
-                <input type="hidden" id="caseNumber" name="caseNumber" value="">
-                <input type="hidden" id="timestamp" name="timestamp" value="">
-
-                <!-- Section 1: Complainant Information -->
-                <div class="section-title">👤 Your Information</div>
-                
-                <div class="row">
-                    <div class="form-group">
-                        <label for="fullName" class="required">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" required 
-                            placeholder="As per identification document">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="relationship" class="required">Relationship to Patient</label>
-                        <select id="relationship" name="relationship" required>
-                            <option value="">Select one...</option>
-                            <option value="self">Self (I am the patient)</option>
-                            <option value="family">Family Member</option>
-                            <option value="legal">Legal Guardian</option>
-                            <option value="advocate">Patient Advocate</option>
-                            <option value="witness">Witness</option>
-                            <option value="staff">Healthcare Staff</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group">
-                        <label for="email" class="required">Email Address</label>
-                        <input type="email" id="email" name="email" required 
-                            placeholder="For case updates">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" 
-                            placeholder="With country code">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Preferred Contact Method</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="contactEmail" name="contactMethod" value="email" checked>
-                            <label for="contactEmail">Email</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="contactPhone" name="contactMethod" value="phone">
-                            <label for="contactPhone">Phone</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="contactMail" name="contactMethod" value="mail">
-                            <label for="contactMail">Physical Mail</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 2: Incident Details -->
-                <div class="section-title">📋 Incident Details</div>
-
-                <div class="row">
-                    <div class="form-group">
-                        <label for="incidentDate" class="required">Date of Incident</label>
-                        <input type="date" id="incidentDate" name="incidentDate" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="facilityName" class="required">Healthcare Facility</label>
-                        <input type="text" id="facilityName" name="facilityName" required 
-                            placeholder="Hospital, Clinic, or Office name">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="facilityAddress">Facility Address</label>
-                    <input type="text" id="facilityAddress" name="facilityAddress" 
-                        placeholder="Street, City, State">
-                </div>
-
-                <div class="form-group">
-                    <label for="complaintType" class="required">Type of Complaint</label>
-                    <select id="complaintType" name="complaintType" required>
-                        <option value="">Select primary concern...</option>
-                        <optgroup label="Clinical Malpractice">
-                            <option value="misdiagnosis">Misdiagnosis / Delayed Diagnosis</option>
-                            <option value="surgical">Surgical Error</option>
-                            <option value="medication">Medication Error</option>
-                            <option value="treatment">Inappropriate Treatment</option>
-                            <option value="infection">Hospital-acquired Infection</option>
-                        </optgroup>
-                        <optgroup label="Administrative">
-                            <option value="records">Medical Records Error</option>
-                            <option value="billing">Billing / Insurance Issue</option>
-                            <option value="privacy">Privacy / Confidentiality Breach</option>
-                            <option value="access">Denial of Access to Care</option>
-                        </optgroup>
-                        <optgroup label="Patient Rights">
-                            <option value="consent">Lack of Informed Consent</option>
-                            <option value="dignity">Disrespectful Treatment</option>
-                            <option value="discrimination">Discrimination</option>
-                            <option value="abuse">Physical/Verbal Abuse</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="description" class="required">Detailed Description</label>
-                    <textarea id="description" name="description" required 
-                        placeholder="Please provide a detailed account of what happened. Include:
-                                    - What occurred
-                                    - Who was involved (staff names/roles if known)
-                                    - When and where it happened
-                                    - Any immediate actions taken
-                                    - How it has affected you/patient">
-                    </textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Severity of Impact</label>
-                    <div class="severity-indicator">
-                        <div class="severity-level" onclick="selectSeverity('low')">
-                            <div class="severity-low">🟢 Low</div>
-                            <small>Minor inconvenience, no lasting impact</small>
-                        </div>
-                        <div class="severity-level" onclick="selectSeverity('medium')">
-                            <div class="severity-medium">🟡 Medium</div>
-                            <small>Temporary harm, required additional treatment</small>
-                        </div>
-                        <div class="severity-level" onclick="selectSeverity('high')">
-                            <div class="severity-high">🔴 High</div>
-                            <small>Serious harm, permanent impact, or fatality</small>
-                        </div>
-                    </div>
-                    <input type="hidden" id="severity" name="severity" value="">
-                </div>
-
-                <!-- Section 3: Supporting Information -->
-                <div class="section-title">📎 Supporting Information</div>
-
-                <div class="form-group">
-                    <label for="involvedParties">Involved Healthcare Providers</label>
-                    <input type="text" id="involvedParties" name="involvedParties" 
-                        placeholder="Names and roles of staff involved (if known)">
-                </div>
-
-                <div class="form-group">
-                    <label for="witnesses">Witnesses</label>
-                    <textarea id="witnesses" name="witnesses" 
-                        placeholder="Names and contact information of witnesses (if applicable)"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Has this been reported elsewhere?</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="reportedFacility" name="reportedTo" value="facility">
-                            <label for="reportedFacility">To the facility directly</label>
-                        </div>
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="reportedBoard" name="reportedTo" value="board">
-                            <label for="reportedBoard">To medical board</label>
-                        </div>
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="reportedPolice" name="reportedTo" value="police">
-                            <label for="reportedPolice">To police/authorities</label>
-                        </div>
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="reportedLawyer" name="reportedTo" value="lawyer">
-                            <label for="reportedLawyer">To lawyer/legal</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Upload Supporting Documents</label>
-                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
-                        <input type="file" id="fileInput" name="attachments" multiple 
-                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
-                        <label for="fileInput">📎 Click to upload or drag and drop</label>
-                        <p class="p2">PDF, Images, or Text files (Max 10MB each)</p>
-                    </div>
-                    <div id="fileList" class="file-list"></div>
-                </div>
-
-                <!-- Privacy Notice -->
-                <div class="privacy-notice">
-                    <strong>🔒 Confidentiality Notice:</strong>
-                    <p class="p3">Your information is protected and will only be used for investigation purposes. Case details may be shared with relevant authorities as required by law. You will receive a unique case number for tracking.</p>
-                </div>
-
-                <!-- Consent Checkboxes -->
-                <div class="form-group">
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="consentContact" name="consentContact" required>
-                        <label for="consentContact" class="required">I consent to be contacted regarding this complaint</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="consentAccurate" name="consentAccurate" required>
-                        <label for="consentAccurate" class="required">I confirm that the information provided is accurate to the best of my knowledge</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" id="consentTerms" name="consentTerms" required>
-                        <label for="consentTerms" class="required">I agree to the terms of submission and privacy policy</label>
-                    </div>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">Submit Complaint</button>
-                    <button type="reset" class="btn-reset">Reset Form</button>
-                </div>
-            </form>
-
-            <!-- Success Message (hidden initially) -->
-            <div id="successMessage" class="hidden">
-                <div class="case-number-display">
-                    <h2>✅ Complaint Submitted Successfully</h2>
-                    <p>Your case number is:</p>
-                    <div class="case-number" id="displayCaseNumber"></div>
-                    <p class="p4">Please save this number for future reference.</p>
-                    <p>You will receive a confirmation email with next steps.</p>
-                    <button onclick="resetAndShowForm()">Submit Another Complaint</button>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-inner">
+            <div class="hero-content">
+                <div class="hero-badge">Official Reporting Platform</div>
+                <h1>Your voice<br>deserves to be <em>heard.</em></h1>
+                <p class="hero-sub">Report malpractice in health or administrative services safely, confidentially, and
+                    with the assurance that your case will be reviewed.</p>
+                <a href="#complaint" class="hero-cta">
+                    File a Complaint
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                    </svg>
+                </a>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-img-wrap">
+                    <img src="images/community_members.webp" alt="Community members" loading="eager">
+                    <div class="hero-img-caption">Protecting the rights of every citizen</div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <div class="trust-strip">
+        <div class="trust-inner">
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                    </svg>
+                </div>
+                <span>100% Confidential submissions</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <span>Cases reviewed within 72 hours</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <span>Official government oversight</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    </svg>
+                </div>
+                <span>No registration required</span>
+            </div>
+        </div>
     </div>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works">
+        <div class="section-inner">
+            <p class="section-label">Simple process</p>
+            <h2 class="section-title">Three steps to file your complaint</h2>
+            <p class="section-sub">No complex paperwork. No bureaucratic hurdles. Just a straightforward way to make
+                your voice count.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h3>Describe your experience</h3>
+                    <p>Fill out a short, simple form with your name, email, and a description of what happened. Takes
+                        less than 3 minutes.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h3>Receive confirmation</h3>
+                    <p>You'll instantly get confirmation that your complaint has been sent. We will then contact your
+                        back for more details.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h3>Our team investigates</h3>
+                    <p>Our Investigators review and analyze your complaint and routes it to the appropriate team within
+                        72 hours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section class="community">
+        <div class="community-inner">
+            <div class="community-images">
+                <img src="images/community_meeting.webp" alt="Community meeting" loading="lazy">
+                <img src="images/healthcare_worker.webp" alt="Healthcare worker" loading="lazy">
+                <img src="images/citizens.webp" alt="Citizens" loading="lazy">
+            </div>
+            <div class="community-text">
+                <p class="section-label">Why it matters</p>
+                <h2 class="section-title">Built for citizens, by citizens</h2>
+                <p class="section-sub">Every complaint submitted helps build a clearer picture of systemic issues in our
+                    health and administrative services. Your report isn't just for you — it protects others.</p>
+                <p class="section-sub">We believe transparency and accountability are not privileges. They are rights.
+                </p>
+                <div class="stat-row">
+                    <div class="stat"><strong>2,400+</strong><span>Cases submitted</span></div>
+                    <div class="stat"><strong>89%</strong><span>Resolution rate</span></div>
+                    <div class="stat"><strong>72h</strong><span>Avg. first response</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPLAINT FORM -->
+    <section class="form-section" id="complaint">
+        <div class="form-inner">
+            <div class="form-intro">
+                <p class="section-label">File a complaint</p>
+                <h2 class="section-title">Tell us what happened</h2>
+                <p class="section-sub">Short, simple, and secure. You don't need an account — just fill in the form and
+                    submit.</p>
+                <div class="form-promises">
+                    <div class="form-promise">
+                        <div class="promise-dot"></div>
+                        <p><strong>Confidential by default.</strong> Your identity is protected throughout the
+                            investigation process.</p>
+                    </div>
+                    <div class="form-promise">
+                        <div class="promise-dot"></div>
+                        <p><strong>Prompt review.</strong> Your complaint is analyzed immediately to prioritize urgent
+                            cases.</p>
+                    </div>
+                    <div class="form-promise">
+                        <div class="promise-dot"></div>
+                        <p><strong>We will reach out to you.</strong> Our investigation team will contact you directly
+                            with next steps once your case is assigned.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="complaint-card">
+                <h3>Submit a Complaint</h3>
+                <p class="card-sub">Fields marked <span class="req-note">*</span> are required. Additional fields will
+                    be added once confirmed by the team.</p>
+
+                <form id="complaintForm">
+                    <input type="hidden" id="caseNumber" name="caseNumber">
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="fullName">Full Name <span class="req">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required placeholder="Your full name">
+                        </div>
+                        <div class="field">
+                            <label for="email">Email Address <span class="req">*</span></label>
+                            <input type="email" id="email" name="email" required placeholder="For case updates">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="description">What happened? <span class="req">*</span></label>
+                        <textarea id="description" name="description" required
+                            placeholder="Briefly describe the incident — who was involved, what occurred, and when it happened."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Complaint</button>
+                    <p class="form-note">By submitting you confirm the information is accurate to the best of your
+                        knowledge.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONFIRMATION POPUP -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+            </div>
+            <h2 class="popup-title">Complaint Submitted</h2>
+            <p class="popup-sub">Thank you. Your complaint has been received and will be reviewed by our team within 72
+                hours.</p>
+            <p class="popup-note">Our investigation team will reach out to you with further details. Please check your
+                email for a confirmation.</p>
+            <div class="popup-actions">
+                <button class="popup-btn-new" id="popupNewBtn">Submit Another Complaint</button>
+                <a href="#" class="popup-btn-home" id="popupHomeBtn">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+        <div class="about-inner">
+            <div class="about-image">
+                <img src="images/team.webp" loading="lazy" alt="Team">
+            </div>
+            <div class="about-text">
+                <p class="section-label">About us</p>
+                <h2 class="section-title">An independent oversight platform</h2>
+                <p class="section-sub">The Social Security Complaint Site (SSCS) was established to create a
+                    transparent, accessible channel for citizens to report malpractice in health and administrative
+                    services.</p>
+                <p class="section-sub">We operate independently, using a rigorous review process to ensure every
+                    complaint is handled fairly and efficiently, regardless of the institution involved.</p>
+                <p class="section-sub">Our investigation team works alongside legal and healthcare professionals to
+                    ensure your complaints lead to real accountability.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <div class="logo-mark">SS</div>
+                    <div class="logo-text">
+                        <strong>SSCS</strong>
+                        <span>Social Security Complaint Site</span>
+                    </div>
+                </a>
+                <p>An independent platform for reporting malpractice in health and administrative services. Your
+                    complaints drive accountability.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#complaint">File a Complaint</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <!-- We can add more pages and information -->
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span id="copyright">&copy; Social Security Complaint Site. All rights reserved.</span>
+            <span>Built for transparency. Built for people.</span>
+        </div>
+    </footer>
+
+    <script src="./scripts/complaint.js"></script>
 </body>
+
 </html>
