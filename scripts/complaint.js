@@ -55,18 +55,6 @@ if (form) {
     document.getElementById('caseNumber').value = caseNumber;
     openPopup(caseNumber);
 
-    // TODO: Send form data to n8n API endpoint
-    // fetch('/api/complaint', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     caseNumber,
-    //     fullName:    document.getElementById('fullName').value,
-    //     email:       document.getElementById('email').value,
-    //     description: document.getElementById('description').value,
-    //     timestamp:   new Date().toISOString(),
-    //   })
-    // });
     let payload = {
         caseNumber,
         fullName:    document.getElementById('fullName').value,
@@ -76,8 +64,6 @@ if (form) {
     }
     // ── Send to n8n Webhook ──────────────────────────
         try {
-            // https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258
-            // https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da
             const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
                 method:  'POST',
                 headers: {
@@ -136,15 +122,15 @@ if (copyrightEl) {
     copyrightEl.textContent = '© ' + new Date().getFullYear() + ' Social Security Complaint Site. All rights reserved.';
 }
 
+
 // ── Smooth scroll for all anchor links ─────────────
 document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
-        // Get the href attribute
-        if (href === '#') { // Check if href is just '#'
-            e.preventDefault();
-            return; // Exit the function
-        }
+
+        // ── Skip empty hashes like href="#" ─────────
+        if (!href || href === '#') return;
+
         const target = document.querySelector(href);
         if (target) {
             e.preventDefault();
