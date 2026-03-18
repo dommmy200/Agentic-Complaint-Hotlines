@@ -67,7 +67,7 @@ if (form) {
     //     timestamp:   new Date().toISOString(),
     //   })
     // });
-    const payload = {
+    let payload = {
         caseNumber,
         fullName:    document.getElementById('fullName').value,
         email:       document.getElementById('email').value,
