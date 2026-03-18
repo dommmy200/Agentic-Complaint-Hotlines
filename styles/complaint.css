@@ -812,6 +812,8 @@ footer {
     justify-content: center;
     padding: 20px;
     animation: fadeIn 0.2s ease;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 }
 
 .popup-overlay.active {

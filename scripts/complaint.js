@@ -32,15 +32,19 @@ const caseDisplay  = document.getElementById('caseDisplay');
 const popupNewBtn  = document.getElementById('popupNewBtn');
 const popupHomeBtn = document.getElementById('popupHomeBtn');
 
-function openpopup(caseNumber) {
+function openPopup(caseNumber) {
     document.getElementById('caseNumber').value = caseNumber;
     popupOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
 }
 
-function closepopup() {
+function closePopup() {
     popupOverlay.classList.remove('active');
     document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
 }
 
 if (form) {
@@ -49,7 +53,7 @@ if (form) {
 
     const caseNumber = generateCaseNumber();
     document.getElementById('caseNumber').value = caseNumber;
-    openpopup(caseNumber);
+    openPopup(caseNumber);
 
     // TODO: Send form data to n8n API endpoint
     // fetch('/api/complaint', {
@@ -70,7 +74,7 @@ if (form) {
 if (popupNewBtn) {
     popupNewBtn.addEventListener('click', function () {
     form.reset();
-    closepopup();
+    closePopup();
     document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
     });
 }
@@ -80,7 +84,7 @@ if (popupHomeBtn) {
     popupHomeBtn.addEventListener('click', function (e) {
     e.preventDefault();
     form.reset();
-    closepopup();
+    closePopup();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
@@ -88,7 +92,7 @@ if (popupHomeBtn) {
 // Close popup if user clicks the dark backdrop
 if (popupOverlay) {
     popupOverlay.addEventListener('click', function (e) {
-    if (e.target === popupOverlay) closepopup();
+    if (e.target === popupOverlay) closePopup();
     });
 }
 
