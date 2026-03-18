@@ -48,7 +48,7 @@ function closePopup() {
 }
 
 if (form) {
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const caseNumber = generateCaseNumber();
@@ -67,6 +67,31 @@ if (form) {
     //     timestamp:   new Date().toISOString(),
     //   })
     // });
+    // ── Send to n8n Webhook ──────────────────────────
+        try {
+            const response = await fetch('https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da', {
+                method:  'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                    //'x-api-key':    'your-demo-secret-key',    matches Header Auth in n8n
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error('Webhook responded with status: ' + response.status);
+            }
+
+            const result = await response.json();
+            console.log('n8n response:', result);
+
+            // ── Show popup only after successful submission ──
+            openPopup(caseNumber);
+
+        } catch (error) {
+            console.error('Submission failed:', error);
+            alert('There was a problem submitting your complaint. Please try again.');
+        }
     });
 }
 
