@@ -27,19 +27,19 @@ function generateCaseNumber() {
 
 // ── Complaint form submission ───────────────────────
 const form         = document.getElementById('complaintForm');
-const modalOverlay = document.getElementById('modalOverlay');
+const popupOverlay = document.getElementById('popupOverlay');
 const caseDisplay  = document.getElementById('caseDisplay');
-const modalNewBtn  = document.getElementById('modalNewBtn');
-const modalHomeBtn = document.getElementById('modalHomeBtn');
+const popupNewBtn  = document.getElementById('popupNewBtn');
+const popupHomeBtn = document.getElementById('popupHomeBtn');
 
-function openModal(caseNumber) {
+function openpopup(caseNumber) {
     document.getElementById('caseNumber').value = caseNumber;
-    modalOverlay.classList.add('active');
+    popupOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-    modalOverlay.classList.remove('active');
+function closepopup() {
+    popupOverlay.classList.remove('active');
     document.body.style.overflow = '';
 }
 
@@ -49,7 +49,7 @@ if (form) {
 
     const caseNumber = generateCaseNumber();
     document.getElementById('caseNumber').value = caseNumber;
-    openModal(caseNumber);
+    openpopup(caseNumber);
 
     // TODO: Send form data to n8n API endpoint
     // fetch('/api/complaint', {
@@ -66,29 +66,29 @@ if (form) {
     });
 }
 
-// Submit another — reset form and close modal
-if (modalNewBtn) {
-    modalNewBtn.addEventListener('click', function () {
+// Submit another — reset form and close popup
+if (popupNewBtn) {
+    popupNewBtn.addEventListener('click', function () {
     form.reset();
-    closeModal();
+    closepopup();
     document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
     });
 }
 
-// Back to home — close modal and scroll to top
-if (modalHomeBtn) {
-    modalHomeBtn.addEventListener('click', function (e) {
+// Back to home — close popup and scroll to top
+if (popupHomeBtn) {
+    popupHomeBtn.addEventListener('click', function (e) {
     e.preventDefault();
     form.reset();
-    closeModal();
+    closepopup();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// Close modal if user clicks the dark backdrop
-if (modalOverlay) {
-    modalOverlay.addEventListener('click', function (e) {
-    if (e.target === modalOverlay) closeModal();
+// Close popup if user clicks the dark backdrop
+if (popupOverlay) {
+    popupOverlay.addEventListener('click', function (e) {
+    if (e.target === popupOverlay) closepopup();
     });
 }
 
