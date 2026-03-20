@@ -28,20 +28,22 @@ function generateCaseNumber() {
 // ── Complaint form submission ───────────────────────
 const form         = document.getElementById('complaintForm');
 const popupOverlay = document.getElementById('popupOverlay');
-const caseDisplay  = document.getElementById('caseDisplay');
+const errorPopupOverlay = document.getElementById('errorPopupOverlay');
+// const caseDisplay  = document.getElementById('caseDisplay');
 const popupNewBtn  = document.getElementById('popupNewBtn');
 const popupHomeBtn = document.getElementById('popupHomeBtn');
+const errorRetryBtn = document.getElementById('errorRetryBtn');
+const errorHomeBtn  = document.getElementById('errorHomeBtn');
 
-function openPopup(caseNumber) {
-    document.getElementById('caseNumber').value = caseNumber;
-    popupOverlay.classList.add('active');
+function openPopup(overlay) {
+    overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
 }
 
-function closePopup() {
-    popupOverlay.classList.remove('active');
+function closePopup(overlay) {
+    overlay.classList.remove('active');
     document.body.style.overflow = '';
     document.body.style.position = '';
     document.body.style.width = '';
@@ -49,21 +51,21 @@ function closePopup() {
 
 if (form) {
     form.addEventListener('submit', async function (e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    const caseNumber = generateCaseNumber();
-    document.getElementById('caseNumber').value = caseNumber;
-    openPopup(caseNumber);
+        const caseNumber = generateCaseNumber();
+        document.getElementById('caseNumber').value = caseNumber;
 
-    let payload = {
-        caseNumber,
-        fullName:    document.getElementById('fullName').value,
-        email:       document.getElementById('email').value,
-        description: document.getElementById('description').value,
-        timestamp:   new Date().toISOString(),
-    }
+        let payload = {
+            caseNumber,
+            fullName:    document.getElementById('fullName').value,
+            email:       document.getElementById('email').value,
+            description: document.getElementById('description').value,
+            timestamp:   new Date().toISOString(),
+        };
     // ── Send to n8n Webhook ──────────────────────────
         try {
+            // Testing: https://fake-url-to-test-error.com
             const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
                 method:  'POST',
                 headers: {
@@ -79,40 +81,62 @@ if (form) {
 
             const result = await response.json();
             console.log('n8n response:', result);
-
             // ── Show popup only after successful submission ──
-            openPopup(caseNumber);
+            openPopup(popupOverlay);
 
         } catch (error) {
             console.error('Submission failed:', error);
-            alert('There was a problem submitting your complaint. Please try again.');
+            openPopup(errorPopupOverlay);
         }
     });
 }
 
-// Submit another — reset form and close popup
+// ── Success popup buttons ───────────────────────────
 if (popupNewBtn) {
     popupNewBtn.addEventListener('click', function () {
-    form.reset();
-    closePopup();
-    document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
+        form.reset();
+        closePopup(popupOverlay);
+        document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
     });
 }
 
 // Back to home — close popup and scroll to top
 if (popupHomeBtn) {
     popupHomeBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    form.reset();
-    closePopup();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+        e.preventDefault();
+        form.reset();
+        closePopup(popupOverlay);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
 // Close popup if user clicks the dark backdrop
 if (popupOverlay) {
     popupOverlay.addEventListener('click', function (e) {
-    if (e.target === popupOverlay) closePopup();
+        if (e.target === popupOverlay) closePopup(popupOverlay);
+    });
+}
+
+// Error popup buttons
+if (errorRetryBtn) {
+    errorRetryBtn.addEventListener('click', function () {
+        closePopup(errorPopupOverlay);
+        document.getElementById('complaint').scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+if (errorHomeBtn) {
+    errorHomeBtn.addEventListener('click', function (e) {
+        form.reset();
+        e.preventDefault();
+        closePopup(errorPopupOverlay);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+if (errorPopupOverlay) {
+    errorPopupOverlay.addEventListener('click', function (e) {
+        if (e.target === errorPopupOverlay) closePopup(errorPopupOverlay);
     });
 }
 
