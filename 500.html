@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 — Server Error | SSCS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./styles/error.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="./index.html" class="logo">
+                <div class="logo-mark">SS</div>
+                <div class="logo-text">
+                    <strong>SSCS</strong>
+                    <span>Social Security Complaint Site</span>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <main class="error-page">
+        <div class="error-inner">
+            <div class="error-code">500</div>
+            <h1 class="error-title">Server Error</h1>
+            <p class="error-sub">Something went wrong on our end. Our team has been notified and is working to fix the
+                issue. Please try again in a few minutes.</p>
+            <div class="error-actions">
+                <a href="./index.html" class="btn-primary">Back to Home</a>
+                <button class="btn-secondary" onclick="window.location.reload()">Try Again</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            <span id="copyright">&copy; 2025 Social Security Complaint Site. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script src="./scripts/error.js"></script>
+</body>
+
+</html>

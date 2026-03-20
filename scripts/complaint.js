@@ -140,6 +140,15 @@ if (errorPopupOverlay) {
     });
 }
 
+// ── Offline detection ───────────────────────────────
+window.addEventListener('offline', function () {
+    window.location.href = './offline.html';
+});
+
+window.addEventListener('online', function () {
+    window.location.reload();
+});
+
 // ── Auto-update copyright year ─────────────────────
 const copyrightEl = document.getElementById('copyright');
 if (copyrightEl) {
