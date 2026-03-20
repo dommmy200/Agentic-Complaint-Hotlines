@@ -841,6 +841,10 @@ footer {
     animation: slideUp 0.25s ease;
 }
 
+.popup-check.error {
+    background: #fde8e8;
+}
+
 @keyframes slideUp {
     from {
         opacity: 0;
