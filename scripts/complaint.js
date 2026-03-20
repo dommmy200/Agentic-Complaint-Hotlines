@@ -66,7 +66,7 @@ if (form) {
     // ── Send to n8n Webhook ──────────────────────────
         try {
             // Testing: https://fake-url-to-test-error.com
-            const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
+            const response = await fetch('https://group2cse499.app.n8n.cloud/webhook/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json'
