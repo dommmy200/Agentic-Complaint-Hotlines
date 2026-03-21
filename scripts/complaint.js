@@ -90,8 +90,8 @@
             };
 
             try {
-                // Submit to n8n webhook(https://dommmy2000.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da)
-                const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da', {
+                // Submit to n8n webhook(https://group2cse499.app.n8n.cloud/webhook-test/dee3fe95-c5c6-4bc0-9c7c-0c103f6093da)
+                const response = await fetch('https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258', {
                     method: 'POST',
                     mode: 'cors',  // Explicitly set CORS mode
                     headers: {
