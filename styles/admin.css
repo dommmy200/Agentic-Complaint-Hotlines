@@ -372,3 +372,16 @@ nav {
         font-size: 1.35rem;
     }
 }
+
+/* Error Icon State */
+.auth-icon.error {
+    background: #fde8e8;
+}
+
+.auth-icon.error svg {
+    stroke: var(--accent);
+}
+
+.hidden {
+    display: none;
+}

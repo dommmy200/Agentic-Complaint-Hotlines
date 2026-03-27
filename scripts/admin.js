@@ -203,3 +203,64 @@ if (forgotForm) {
         }
     });
 }
+
+// RESET PASSWORD FORM (placeholder, as backend route is not implemented)
+const resetForm = document.getElementById('resetForm');
+if (resetForm) {
+    document.getElementById('resetBtn').dataset.label = 'Reset Password';
+    
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    //IF token is missing, show error
+    if (!token) {
+        document.getElementById('resetFormWrap').classList.add('hidden');
+        document.getElementById('invalidToken').classList.remove('hidden');
+    }
+
+    resetForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideError('resetError');
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password.length < 8) {
+            showError('resetError', 'Password must be at least 8 characters.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            showError('resetError', 'Passwords do not match.');
+            return;
+        }
+
+        setLoading('resetBtn', true);
+
+        try {
+            const res = await fetch(API + '/api/auth/reset', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ token, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showError('resetError', data.error || 'Something went wrong. Please try again.');
+                setLoading('resetBtn', false);
+                return;
+            }
+
+            showSuccess('resetSuccess', 'Password reset successfully! Redirecting to login...');
+            resetForm.reset();
+            setLoading('resetBtn', false);
+
+            // Redirect to login after 2 seconds
+            setTimeout(() => { window.location.href = './login.html'; }, 2000);
+        } catch (error) {
+            showError('resetError', 'Connection error. Please check your internet and try again.');
+            setLoading('resetBtn', false);
+        }
+    });
+}
