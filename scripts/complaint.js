@@ -17,6 +17,8 @@ if (navToggle) {
 }
 
 // ── Case number generator ───────────────────────────
+// Task 4: generates SSCS-YYMM-RANDOM format and is wired to the
+// submission handler below. No changes needed here.
 function generateCaseNumber() {
     const d   = new Date();
     const yr  = d.getFullYear().toString().slice(-2);
@@ -61,6 +63,67 @@ anonymousRadios.forEach(function (radio) {
         applyAnonymousState(this.value);
     });
 });
+
+// ── Task 1: Email regex validator (live, on blur) ───
+// Pattern mirrors the n8n preprocess.md validation exactly.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function setEmailError(message) {
+    const errorEl = document.getElementById('emailError');
+    if (!errorEl || !emailInput) return;
+    if (message) {
+        errorEl.textContent = message;
+        errorEl.classList.add('visible');
+        emailInput.classList.add('field-invalid');
+    } else {
+        errorEl.textContent = '';
+        errorEl.classList.remove('visible');
+        emailInput.classList.remove('field-invalid');
+    }
+}
+
+if (emailInput) {
+    // Validate format when the user leaves the field
+    emailInput.addEventListener('blur', function () {
+        const val = this.value.trim();
+        if (!val) {
+            // Empty is caught by the submit handler; no error on blur
+            setEmailError(null);
+            return;
+        }
+        if (!EMAIL_RE.test(val)) {
+            setEmailError('Please enter a valid email address (e.g. name@example.com).');
+        } else {
+            setEmailError(null);
+        }
+    });
+
+    // Clear the error the moment the user starts editing again
+    emailInput.addEventListener('input', function () {
+        if (EMAIL_RE.test(this.value.trim())) {
+            setEmailError(null);
+        }
+    });
+}
+
+// ── Task 2: Description length counter (live) ───────
+const descriptionEl  = document.getElementById('description');
+const descCountEl    = document.getElementById('descCount');
+const descCounterEl  = document.getElementById('descCounter');
+const DESC_MIN       = 20;
+
+function updateDescCounter() {
+    if (!descriptionEl || !descCountEl || !descCounterEl) return;
+    const len = descriptionEl.value.length;
+    descCountEl.textContent = len;
+    descCounterEl.classList.toggle('counter-ok',   len >= DESC_MIN);
+    descCounterEl.classList.toggle('counter-warn', len > 0 && len < DESC_MIN);
+}
+
+if (descriptionEl) {
+    descriptionEl.addEventListener('input', updateDescCounter);
+    updateDescCounter(); // initialise on page load
+}
 
 // ── Form validation error helper ────────────────────
 function showFormError(message) {
@@ -151,6 +214,12 @@ if (form) {
                 if (emailInput) emailInput.focus();
                 return;
             }
+            if (!EMAIL_RE.test(email)) {
+                setEmailError('Please enter a valid email address (e.g. name@example.com).');
+                showFormError('The email address you entered is not valid. Please correct it before submitting.');
+                if (emailInput) emailInput.focus();
+                return;
+            }
         }
 
         // Validate description length (mirrors n8n preprocess check)
@@ -195,11 +264,9 @@ if (form) {
         setSubmitLoading(true);
 
         try {
-            // NOTE: Replace with the production webhook URL before go-live.
-            // The "-test" variant is the n8n test listener (active only when
-            // the workflow is open in the editor).
+            // Production webhook — active whenever the n8n workflow is deployed.
             const response = await fetch(
-                'https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258',
+                'https://group2cse499.app.n8n.cloud/webhook/1f4557fb-1fe4-4055-b64c-96f0ca5bd258',
                 {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -277,6 +344,47 @@ if (errorHomeBtn) {
 if (errorPopupOverlay) {
     errorPopupOverlay.addEventListener('click', function (e) {
         if (e.target === errorPopupOverlay) closePopup(errorPopupOverlay);
+    });
+}
+
+// ── Task 5: Copy case number to clipboard ───────────
+const copyBtn = document.getElementById('copyBtn');
+
+if (copyBtn) {
+    const COPY_LABEL = copyBtn.innerHTML; // preserve original label + icon
+
+    copyBtn.addEventListener('click', function () {
+        const caseNum = document.getElementById('popupCaseNumber');
+        if (!caseNum || caseNum.textContent === '—') return;
+
+        const text = caseNum.textContent;
+
+        function onCopied() {
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = '✓ Copied!';
+            setTimeout(function () {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = COPY_LABEL;
+            }, 2500);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(onCopied).catch(fallback);
+        } else {
+            fallback();
+        }
+
+        function fallback() {
+            // execCommand fallback for older / restricted browsers
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); onCopied(); } catch (_) { /* silent */ }
+            document.body.removeChild(ta);
+        }
     });
 }
 
