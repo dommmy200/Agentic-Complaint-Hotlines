@@ -11,12 +11,11 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="./styles/complaint.css">
-    <!-- Icons sourced from Heroicons (https://heroicons.com) — MIT License -->
 </head>
 
 <body>
 
-    <!-- NAV -->
+    <!-- ── NAV ──────────────────────────────────────── -->
     <nav>
         <div class="nav-inner">
             <a href="#" class="logo">
@@ -26,14 +25,16 @@
                     <span>Social Security Complaint Site</span>
                 </div>
             </a>
+
             <ul class="nav-links">
-                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Home</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
                 <li><a href="#complaint">File a Complaint</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="admin.html" class="btn-login">Admin Login</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="./admin/login.html" class="btn-login">Admin Login</a></li>
             </ul>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -41,34 +42,36 @@
         </div>
     </nav>
 
-    <!-- HERO -->
+    <!-- ── HERO ─────────────────────────────────────── -->
     <section class="hero">
         <div class="hero-overlay"></div>
         <div class="hero-inner">
             <div class="hero-content">
-                <div class="hero-badge">Official Reporting Platform</div>
-                <h1>Your voice<br>deserves to be <em>heard.</em></h1>
-                <p class="hero-sub">Report malpractice in health or administrative services safely, confidentially, and
-                    with the assurance that your case will be reviewed.</p>
+                <div class="hero-badge">Official Complaint Portal</div>
+                <h1>Your Voice Matters.<br><em>We Are Listening.</em></h1>
+                <p class="hero-sub">
+                    Report concerns about social security health facilities safely and securely.
+                    Anonymous submissions are fully supported — your privacy is our priority.
+                </p>
                 <a href="#complaint" class="hero-cta">
                     File a Complaint
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
-                        <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                    </svg>
+                        <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                 </a>
             </div>
+
             <div class="hero-visual">
                 <div class="hero-img-wrap">
-                    <img src="images/community_members.webp" alt="Community members" loading="eager">
-                    <div class="hero-img-caption">Protecting the rights of every citizen</div>
+                    <img src="./images/citizens.webp" alt="Community members reviewing information together">
+                    <p class="hero-img-caption">Empowering citizens to report and be heard</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- TRUST STRIP -->
+    <!-- ── TRUST STRIP ───────────────────────────────── -->
     <div class="trust-strip">
         <div class="trust-inner">
             <div class="trust-item">
@@ -76,28 +79,10 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path
-                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                            d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>
                 </div>
-                <span>100% Confidential submissions</span>
-            </div>
-            <div class="trust-item">
-                <div class="trust-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                </div>
-                <span>Cases reviewed within 72 hours</span>
-            </div>
-            <div class="trust-item">
-                <div class="trust-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                </div>
-                <span>Official government oversight</span>
+                <span>Secure & Encrypted</span>
             </div>
             <div class="trust-item">
                 <div class="trust-icon">
@@ -106,115 +91,237 @@
                         <path
                             d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
+                </div>
+                <span>Anonymous Submissions Accepted</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                 </div>
-                <span>No registration required</span>
+                <span>24/7 Available</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <span>Reviewed by Officials</span>
             </div>
         </div>
     </div>
 
-    <!-- HOW IT WORKS -->
+    <!-- ── HOW IT WORKS ──────────────────────────────── -->
     <section class="section" id="how-it-works">
         <div class="section-inner">
-            <p class="section-label">Simple process</p>
-            <h2 class="section-title">Three steps to file your complaint</h2>
-            <p class="section-sub">No complex paperwork. No bureaucratic hurdles. Just a straightforward way to make
-                your voice count.</p>
+            <p class="section-label">Process</p>
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-sub">Filing a complaint is simple, safe, and takes only a few minutes.</p>
+
             <div class="steps">
                 <div class="step">
-                    <div class="step-num">1</div>
-                    <h3>Describe your experience</h3>
-                    <p>Fill out a short, simple form with your name, email, and a description of what happened. Takes
-                        less than 3 minutes.</p>
+                    <div class="step-num">01</div>
+                    <h3>Choose Your Privacy</h3>
+                    <p>Decide whether to submit anonymously or include your contact details so we can follow up with you
+                        directly.</p>
                 </div>
                 <div class="step">
-                    <div class="step-num">2</div>
-                    <h3>Receive confirmation</h3>
-                    <p>You'll instantly get confirmation that your complaint has been sent. We will then contact your
-                        back for more details.</p>
+                    <div class="step-num">02</div>
+                    <h3>Describe the Incident</h3>
+                    <p>Fill in the facility, date, and a clear description of your experience. The more detail you
+                        provide, the better we can help.</p>
                 </div>
                 <div class="step">
-                    <div class="step-num">3</div>
-                    <h3>Our team investigates</h3>
-                    <p>Our Investigators review and analyze your complaint and routes it to the appropriate team within
-                        72 hours.</p>
+                    <div class="step-num">03</div>
+                    <h3>Receive Your Case Number</h3>
+                    <p>After submission you will receive a unique case number. Keep it safe — it allows you to track the
+                        status of your complaint.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- COMMUNITY -->
-    <section class="community">
+    <!-- ── COMMUNITY STATS ───────────────────────────── -->
+    <div class="community">
         <div class="community-inner">
             <div class="community-images">
-                <img src="images/community_meeting.webp" alt="Community meeting" loading="lazy">
-                <img src="images/healthcare_worker.webp" alt="Healthcare worker" loading="lazy">
-                <img src="images/citizens.webp" alt="Citizens" loading="lazy">
-            </div>
+                    <img src="./images/community_members.webp" alt="Community members standing together in solidarity">
+                    <img src="./images/community_meeting.webp" alt="Community hands joined in unity">
+                    <img src="./images/team.webp"             alt="Administrators reviewing a complaint together">
+                </div>
             <div class="community-text">
-                <p class="section-label">Why it matters</p>
-                <h2 class="section-title">Built for citizens, by citizens</h2>
-                <p class="section-sub">Every complaint submitted helps build a clearer picture of systemic issues in our
-                    health and administrative services. Your report isn't just for you — it protects others.</p>
-                <p class="section-sub">We believe transparency and accountability are not privileges. They are rights.
-                </p>
+                <p class="section-label">Impact</p>
+                <h2 class="section-title">Making Healthcare Accountability Real</h2>
+                <p class="section-sub">Every complaint filed through SSCS is reviewed and forwarded to the relevant
+                    oversight body. Your report can prevent the same issue from affecting other patients.</p>
+                <p class="section-sub">We handle each submission with strict confidentiality in accordance with national
+                    data protection laws.</p>
                 <div class="stat-row">
-                    <div class="stat"><strong>2,400+</strong><span>Cases submitted</span></div>
-                    <div class="stat"><strong>89%</strong><span>Resolution rate</span></div>
-                    <div class="stat"><strong>72h</strong><span>Avg. first response</span></div>
+                    <div class="stat">
+                        <strong>14</strong>
+                        <span>Facilities Covered</span>
+                    </div>
+                    <div class="stat">
+                        <strong>100%</strong>
+                        <span>Complaints Reviewed</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Anon</strong>
+                        <span>Submissions Supported</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- COMPLAINT FORM -->
+    <!-- ── COMPLAINT FORM ────────────────────────────── -->
     <section class="form-section" id="complaint">
         <div class="form-inner">
+
+            <!-- Left: intro -->
             <div class="form-intro">
-                <p class="section-label">File a complaint</p>
-                <h2 class="section-title">Tell us what happened</h2>
-                <p class="section-sub">Short, simple, and secure. You don't need an account — just fill in the form and
-                    submit.</p>
+                <p class="section-label">File a Complaint</p>
+                <h2 class="section-title">We Take Every Report Seriously</h2>
+                <p class="section-sub">Use the form to report any concern about a social security health facility. All
+                    fields marked <span style="color:#e88070">*</span> are required.</p>
+
                 <div class="form-promises">
                     <div class="form-promise">
                         <div class="promise-dot"></div>
-                        <p><strong>Confidential by default.</strong> Your identity is protected throughout the
-                            investigation process.</p>
+                        <p><strong>Anonymous option available.</strong> You can submit without providing any personal
+                            information.</p>
                     </div>
                     <div class="form-promise">
                         <div class="promise-dot"></div>
-                        <p><strong>Prompt review.</strong> Your complaint is analyzed immediately to prioritize urgent
-                            cases.</p>
+                        <p><strong>Case number issued instantly.</strong> Save your reference number to track progress.
+                        </p>
                     </div>
                     <div class="form-promise">
                         <div class="promise-dot"></div>
-                        <p><strong>We will reach out to you.</strong> Our investigation team will contact you directly
-                            with next steps once your case is assigned.</p>
+                        <p><strong>Forwarded within 48 hours.</strong> Your report reaches the appropriate oversight
+                            body promptly.</p>
                     </div>
                 </div>
             </div>
 
+            <!-- Right: form card -->
             <div class="complaint-card">
-                <h3>Submit a Complaint</h3>
-                <p class="card-sub">Fields marked <span class="req-note">*</span> are required. Additional fields will
-                    be added once confirmed by the team.</p>
+                <h3>Complaint Registration</h3>
+                <p class="card-sub">Fields marked <span class="req-note">*</span> are required.</p>
 
-                <form id="complaintForm">
+                <form id="complaintForm" novalidate>
+
+                    <!-- Hidden auto-populated fields -->
                     <input type="hidden" id="caseNumber" name="caseNumber">
-                    <div class="field-row">
-                        <div class="field">
-                            <label for="fullName">Full Name <span class="req">*</span></label>
-                            <input type="text" id="fullName" name="fullName" required placeholder="Your full name">
-                        </div>
-                        <div class="field">
-                            <label for="email">Email Address <span class="req">*</span></label>
-                            <input type="email" id="email" name="email" required placeholder="For case updates">
+                    <input type="hidden" id="timestamp"  name="timestamp">
+
+                    <!-- ── Anonymous Toggle ───────────────── -->
+                    <div class="field">
+                        <label>Do you want to remain anonymous? <span class="req">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="anonymous" value="true" required>
+                                Yes — keep my identity private
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="anonymous" value="false">
+                                No — include my contact details
+                            </label>
                         </div>
                     </div>
+
+                    <!-- ── Anonymous notice ───────────────── -->
+                    <div class="anon-notice" id="anonNotice">
+                        Your submission will be completely anonymous. No personal information will be stored or
+                        transmitted.
+                    </div>
+
+                    <!-- ── Personal Info (hidden when anonymous) ── -->
+                    <div id="userInfo">
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="fullName">Full Name <span class="req">*</span></label>
+                                <input type="text" id="fullName" name="fullName" placeholder="Jane Doe"
+                                    autocomplete="name">
+                            </div>
+                            <div class="field">
+                                <label for="personalId">Personal / National ID</label>
+                                <input type="text" id="personalId" name="personalId"
+                                    placeholder="Passport or ID number">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="+507 6000 0000"
+                                    autocomplete="tel">
+                            </div>
+                            <div class="field">
+                                <label for="email">Email Address <span class="req">*</span></label>
+                                <input type="email" id="email" name="email" placeholder="your@email.com"
+                                    autocomplete="email">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="followUp">Would you like to receive follow-up updates?</label>
+                            <select id="followUp" name="followUp">
+                                <option value="">Select an option</option>
+                                <option value="true">Yes, please contact me</option>
+                                <option value="false">No, thank you</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ── Incident Details (always visible) ── -->
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="incidentDate">Incident Date <span class="req">*</span></label>
+                            <input type="date" id="incidentDate" name="incidentDate" required>
+                        </div>
+                        <div class="field">
+                            <label for="incidentTime">Incident Time</label>
+                            <input type="time" id="incidentTime" name="incidentTime">
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="department">Department / Ward</label>
+                            <input type="text" id="department" name="department"
+                                placeholder="e.g. Emergency, Cardiology">
+                        </div>
+                        <div class="field">
+                            <label for="healthFacility">Health Facility <span class="req">*</span></label>
+                            <select id="healthFacility" name="healthFacility" required>
+                                <option value="">Select facility</option>
+                                <option>Complejo Hospitalario Dr. Arnulfo Arias Madrid</option>
+                                <option>Ciudad de la Salud</option>
+                                <option>Hospital Irma de Lourdes Tzanetatos</option>
+                                <option>Hospital de Especialidades Pediátricas Omar Torrijos Herrera</option>
+                                <option>Hospital Susana Jones Cano</option>
+                                <option>Hospital Regional de Chepo</option>
+                                <option>Policlínica Dr. Santiago Barraza</option>
+                                <option>Policlínica Dr. Blas Daniel Gómez Cheto</option>
+                                <option>Hospital Regional Rafael Hernández</option>
+                                <option>Hospital Dr. Gustavo Nelson Collado</option>
+                                <option>Hospital Dr. Rafael Estévez</option>
+                                <option>Hospital Dr. Manuel Amador Guerrero</option>
+                                <option>Hospital Ezequiel Abadía</option>
+                                <option>Hospital Raúl Dávila Mena</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="field">
-                        <label for="description">What happened? <span class="req">*</span></label>
-                        <textarea id="description" name="description" required
-                            placeholder="Briefly describe the incident — who was involved, what occurred, and when it happened."></textarea>
+                        <label for="description">Complaint Details <span class="req">*</span></label>
+                        <textarea id="description" name="description" rows="5" required
+                            placeholder="Please describe the incident in detail. Include what happened, who was involved, and how it affected you. (Minimum 20 characters)"></textarea>
                     </div>
                     <div class="keyword-hint">
                         Describe what happened in detail. You may use this format...
@@ -232,67 +339,38 @@
         </div>
     </section>
 
-    <!-- CONFIRMATION POPUP -->
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup">
-            <div class="popup-check">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
-            </div>
-            <h2 class="popup-title">Complaint Submitted</h2>
-            <p class="popup-sub">Thank you. Your complaint has been received and will be reviewed by our team within 72
-                hours.</p>
-            <p class="popup-note">Our investigation team will reach out to you with further details. Please check your
-                email for a confirmation.</p>
-            <div class="popup-actions">
-                <button class="popup-btn-new" id="popupNewBtn">Submit Another Complaint</button>
-                <a href="#" class="popup-btn-home" id="popupHomeBtn">Back to Home</a>
-            </div>
-        </div>
-    </div>
+                    <!-- Validation error display -->
+                    <div class="form-validation-error" id="formValidationError"></div>
 
-    <!---ERROR POPUP--->
-    <div class="popup-overlay" id="errorPopupOverlay">
-        <div class="popup">
-            <div class="popup-check error">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                </svg>
-            </div>
-            <h2 class="popup-title">Submission Failed</h2>
-            <p class="popup-sub">An error occurred while submitting your complaint. Please try again later.</p>
-            <p class="popup-note">If the issue persists, please contact our support team for assistance.</p>
-            <div class="popup-actions">
-                <button class="popup-btn-new" id="errorRetryBtn">Try Again</button>
-                <a href="#" class="popup-btn-home" id="errorHomeBtn">Back to Home</a>
-            </div>
-        </div>
-    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit Complaint</button>
+                    <p class="form-note">Your submission is encrypted and securely transmitted. Anonymous submissions
+                        are fully supported.</p>
 
-    <!-- ABOUT -->
-    <section class="about" id="about">
-        <div class="about-inner">
-            <div class="about-image">
-                <img src="images/team.webp" loading="lazy" alt="Team">
-            </div>
-            <div class="about-text">
-                <p class="section-label">About us</p>
-                <h2 class="section-title">An independent oversight platform</h2>
-                <p class="section-sub">The Social Security Complaint Site (SSCS) was established to create a
-                    transparent, accessible channel for citizens to report malpractice in health and administrative
-                    services.</p>
-                <p class="section-sub">We operate independently, using a rigorous review process to ensure every
-                    complaint is handled fairly and efficiently, regardless of the institution involved.</p>
-                <p class="section-sub">Our investigation team works alongside legal and healthcare professionals to
-                    ensure your complaints lead to real accountability.</p>
+                </form>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- ── ABOUT ─────────────────────────────────────── -->
+    <section class="about" id="about">
+        <div class="about-inner">
+            <div class="about-image">
+                <img src="./images/hero-bg.webp" alt="A dedicated SSCS administrator ready to help">
+            </div>
+            <div class="about-text">
+                <p class="section-label">About Us</p>
+                <h2 class="section-title">What Is SSCS?</h2>
+                <p class="section-sub">The Social Security Complaint Site (SSCS) is an independent platform designed to
+                    give patients and the public a safe, accessible channel to report concerns about social security
+                    health facilities.</p>
+                <p class="section-sub">Every submission is reviewed by trained administrators and forwarded to the
+                    appropriate oversight authority within 48 hours. We believe accountability starts with listening.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── FOOTER ────────────────────────────────────── -->
     <footer>
         <div class="footer-inner">
             <div class="footer-brand">
@@ -303,8 +381,8 @@
                         <span>Social Security Complaint Site</span>
                     </div>
                 </a>
-                <p>An independent platform for reporting malpractice in health and administrative services. Your
-                    complaints drive accountability.</p>
+                <p>An independent platform for reporting concerns about social security health facilities. Your voice
+                    matters.</p>
             </div>
             <div class="footer-col">
                 <h4>Navigation</h4>
@@ -312,25 +390,71 @@
                     <li><a href="#">Home</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
                     <li><a href="#complaint">File a Complaint</a></li>
-                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#about">About</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Legal</h4>
+                <h4>Admin</h4>
                 <ul>
-                    <!-- We can add more pages and information -->
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Use</a></li>
-                    <li><a href="#">Accessibility</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="./admin/login.html">Admin Login</a></li>
+                    <li><a href="./admin/register.html">Register</a></li>
+                    <li><a href="./admin/forgot.html">Reset Password</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <span id="copyright">&copy; Social Security Complaint Site. All rights reserved.</span>
-            <span>Built for transparency. Built for people.</span>
+            <span id="copyright">&copy; 2025 Social Security Complaint Site. All rights reserved.</span>
         </div>
     </footer>
+
+    <!-- ── SUCCESS POPUP ─────────────────────────────── -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup-check">
+                <!-- Heroicons: check -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+            </div>
+            <h2 class="popup-title">Complaint Submitted</h2>
+            <p class="popup-sub">Your complaint has been received and will be reviewed within 48 hours.</p>
+            <p class="popup-case-label">Your Case Number</p>
+            <span class="case-badge" id="popupCaseNumber">—</span>
+            <p class="popup-note">
+                Please save this case number. It is the only way to reference or track your complaint. We recommend
+                taking a screenshot or writing it down now.
+            </p>
+            <div class="popup-actions">
+                <button class="popup-btn-new" id="popupNewBtn">Submit Another Complaint</button>
+                <a href="#" class="popup-btn-home" id="popupHomeBtn">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ERROR POPUP ───────────────────────────────── -->
+    <div class="popup-overlay" id="errorPopupOverlay">
+        <div class="popup">
+            <div class="popup-check error">
+                <!-- Heroicons: x-mark -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+            <h2 class="popup-title">Submission Failed</h2>
+            <p class="popup-sub">We were unable to submit your complaint. Your data has not been lost — please try
+                again.</p>
+            <p class="popup-note">
+                If the problem persists, check your internet connection or try again in a few minutes. Your form data
+                is still intact.
+            </p>
+            <div class="popup-actions">
+                <button class="popup-btn-new" id="errorRetryBtn">Try Again</button>
+                <a href="#" class="popup-btn-home" id="errorHomeBtn">Back to Home</a>
+            </div>
+        </div>
+    </div>
 
     <script src="./scripts/complaint.js"></script>
 </body>
