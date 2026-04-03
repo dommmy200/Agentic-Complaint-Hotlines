@@ -28,6 +28,7 @@ This platform aims to simplify the reporting process while improving the quality
 ### Core Features
 
 - Structured complaint submission form
+- Telegram for conversational input
 - Anonymous complaint option
 - Unique tracking number for each complaint
 - Reformulation of poorly written complaints using AI
@@ -36,6 +37,7 @@ This platform aims to simplify the reporting process while improving the quality
 
 ### Extra Feature
 
+- Telegram trigger bot conducts a multi-turn conversation via Telegram, 
 - Scheduled trigger to generate an automatic daily executive summary of complaints
 
 ---
@@ -51,11 +53,26 @@ This platform aims to simplify the reporting process while improving the quality
 ### Database
 
 - Google Sheets
+- Conventional Memory
+- Postgres DB
 
 ### Automation
 
 - n8n
 
+### Nodes
+
+- n8n
+- IF-Node
+- AI Agent
+- Code Node
+- Output Parser
+- Gemini Model
+- Code Node
+- Telegram Response Node
+- Google Sheet
+- Gmail Node
+- Form Trigger Node
 ---
 
 ## Team Quotes
@@ -72,7 +89,7 @@ Each team member has added one of their favorite quotes as part of the project c
 
 ### Dominic Odeh Abah
 
->
+> “The more I learn, the more I realize how much I don't know.” - Albert Einstein
 
 ### Herick Guillen
 
