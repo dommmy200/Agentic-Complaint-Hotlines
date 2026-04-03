@@ -107,6 +107,11 @@ nav {
 }
 
 /* ── AUTH PAGE ─────────────────────────────────────── */
+
+.hidden {
+    display: none;
+}
+
 .auth-page {
     flex: 1;
     display: flex;
