@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000';
+const API = 'https://sscs-backend.onrender.com';
 
 // Helpers
 function showError(id, message) {
