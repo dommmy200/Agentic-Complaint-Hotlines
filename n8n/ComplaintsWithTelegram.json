@@ -1,0 +1,1374 @@
+{
+  "name": "ComplaintsTelegram",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2ad32886-a31e-4f3a-8c29-f6f4727680de",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        720
+      ],
+      "id": "376da87e-3cf2-4ce9-aedd-3c8897497efb",
+      "name": "Complaint-Form-Trigger",
+      "webhookId": "2ad32886-a31e-4f3a-8c29-f6f4727680de"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"complaint_category\": \"\",\n  \"priority_level\": \"\",\n  \"reformulated_complaint\": \"\",\n  \"investigative_summary\": \"\",\n  \"missing_information\": [\n    \"\",\n    \"\"\n  ],\n  \"key_entities_detected\": {\n    \"department_or_area\": \"\",\n    \"staff_roles_mentioned\": \"\",\n    \"financial_elements\": \"\",\n    \"patient_safety_risk\": \"\"\n  },\n  \"investigator_observations\": \"\",\n  \"recommended_next_action\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        512
+      ],
+      "id": "b4deb331-32fd-44a7-af6c-eb91ffa7c66a",
+      "name": "Output Parser"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        944
+      ],
+      "id": "2d7278d8-7593-4d5f-b120-41ca99d5c546",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY",
+          "mode": "list",
+          "cachedResultName": "CSE499-records",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1959860981,
+          "mode": "list",
+          "cachedResultName": "ComplaintsDB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit#gid=1959860981"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "submissionDate",
+              "lookupValue": "={{ $now.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        944
+      ],
+      "id": "4482bf0d-be75-4493-84fb-20d2917c2888",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yS0ugCd71Yvpa6Z3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dailySummary",
+        "include": "specifiedFields",
+        "fieldsToInclude": "anonymous, followUp, incidentDate, healthFacility, investigator_observations, priority_level, complaint_category",
+        "options": {}
+      },
+      "id": "c2573924-6399-4834-99c3-70a746761a70",
+      "name": "Consolidate Rows",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Complaint Case {{ $json.caseNumber }} - {{ $json.priority_level }} Priority",
+        "message": "=<h2>Complaint Investigation Update</h2><p><strong>Case Number:</strong> {{ $json.caseNumber }}</p><p><strong>Priority Level:</strong> {{ $json.priority_level }}</p><p><strong>Category:</strong> {{ $json.complaint_category }}</p><p><strong>Incident Date:</strong> {{ $json.incidentDate }}</p><p><strong>Health Facility:</strong> {{ $json.healthFacility }}</p><p><strong>Department:</strong> {{ $json.department }}</p><hr><h3>Reformulated Complaint:</h3><p>{{ $json.reformulated_complaint }}</p>",
+        "options": {}
+      },
+      "id": "8977f0ab-132e-43ef-856b-4776bbd65758",
+      "name": "Reply User",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        288
+      ],
+      "webhookId": "b4eb2eb7-6589-4821-9552-5a91383db3b7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7oueqT3DlL0VYGn7",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "herickguillen@gmail.com",
+        "subject": "=Daily Summary - {{ $today.minus(1, 'days').toFormat('yyyy-MM-dd') }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        832
+      ],
+      "id": "7bc9cceb-630a-42dc-8ec3-be7ce09cd694",
+      "name": "Send Daily Summary",
+      "webhookId": "2e16faf4-40df-4195-94d7-48d613ede91f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7oueqT3DlL0VYGn7",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.anonymous }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              },
+              "rightValue": "false",
+              "id": "155e9371-7ff9-4b57-b6b2-0e4673858a03"
+            },
+            {
+              "id": "755d502a-0479-444f-bf6e-ad8271edb34e",
+              "leftValue": "={{ $json.followUp }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "af136d2f-75d2-41d2-86b1-139bccc7bfba",
+      "name": "Check FollowUp",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will receive complaint information submitted through a web form.\n\nThe complaint narrative is located in the field:\n\ncomplaintDetails\n\nYour task is to analyze ONLY the content inside this field and generate the structured investigative assessment.\n\nUsing the text contained in complaintDetails, you must:\n\nDetermine the appropriate complaint_category\nAssess the priority_level\nProduce a reformulated_complaint written in formal and neutral institutional language\nGenerate an investigative_summary\nIdentify missing_information\nDetect relevant key_entities\nProvide investigator_observations\nSuggest a recommended_next_action\n\nDo not use or infer information from other fields unless explicitly stated.\n\nIf the complaint text is unclear, incomplete, or poorly written, you must still attempt classification and indicate uncertainty in the observations.\n\nInput Complaint Text:\nExact date of initial clinic visit {{ $json.body.incidentDate }} || {{ $json.incidentDate }}\nExact time of initial clinic visit {{ $json.body.incidentTime }} || {{ $json.incidentTime }}\nName of the clinic or hospital {{ $json.body.healthFacility }} || {{ $json.healthFacility }}\nName of the area or department {{ $json.body.department }} || {{ $json.department }}\n{{ $json.body.complaintDetails }} || {{ $json.complaintDetails }}\nOutput Requirement:\n\nReturn ONLY a valid JSON object following the predefined system schema.\n\nDo not include explanations, markdown, or additional text.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI Investigator Assistant working for the internal investigation unit of a healthcare institution.\nYour role is to analyze complaints submitted through a web reporting system and support human investigators in classification and preliminary assessment.\n\nYou must always act with professional neutrality, analytical reasoning, and institutional objectivity.\n\nComplaints may relate to medical care issues, administrative or billing problems, insurance disputes, staff misconduct, security incidents, infrastructure failures, or other events occurring within healthcare facilities.\n\n🎯 Your Tasks\nClassify the complaint into the most appropriate category:\nMEDICAL_CARE\nADMINISTRATIVE_BILLING_INSURANCE\nSTAFF_MISCONDUCT\nSECURITY_OR_CRIMINAL\nINFRASTRUCTURE_SERVICE_QUALITY\nOTHER\nGenerate a clear reformulated version\nRewrite the complaint in formal, neutral, and structured language while preserving original meaning.\nProduce a concise investigative summary\nHighlight:\nCore incident\nArea or department involved\nIndividuals or roles mentioned\nOperational, financial, or patient safety impact\nDetect missing critical information\n\nExamples:\n\nIncident date or timeframe\nExact location or department\nNames or roles of personnel involved\nEvidence availability\nFinancial amounts or medical consequences\nAssess preliminary investigation priority\n\nUse:\n\nHIGH → risk to patient safety, fraud suspicion, violence, legal exposure\nMEDIUM → operational disruption, financial disputes, repeated service failure\nLOW → minor dissatisfaction or non-critical administrative issues\nProvide investigator observations\nShort analytical notes that may help guide next investigative steps.\n⚠️ Strict Rules\nDo NOT assume facts not stated.\nDo NOT make legal conclusions.\nDo NOT assign blame.\nMaintain institutional investigative tone.\nAlways produce valid JSON.\nDo NOT include explanations outside the JSON.\n📦 REQUIRED OUTPUT FORMAT (Always Return This JSON Structure)\n{\n  \"complaint_category\": \"\",\n  \"priority_level\": \"\",\n  \"reformulated_complaint\": \"\",\n  \"investigative_summary\": \"\",\n  \"missing_information\": [\n    \"\",\n    \"\"\n  ],\n  \"key_entities_detected\": {\n    \"department_or_area\": \"\",\n    \"staff_roles_mentioned\": \"\",\n    \"financial_elements\": \"\",\n    \"patient_safety_risk\": \"\"\n  },\n  \"investigator_observations\": \"\",\n  \"recommended_next_action\": \"\"\n}\n🎯 Objective\n\nYour purpose is to improve clarity, enable structured classification, and accelerate institutional investigation workflows, allowing human investigators to make faster and better-informed decisions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        288
+      ],
+      "id": "614ae7f8-fd6d-402d-b8b2-40bc94d5a86c",
+      "name": "AI Agent Classification",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following set of complaint investigation records corresponding to the operational day.\n\nEach record contains the following fields:\n- investigator_observations\n- anonymous\n- followUp\n- incidentDate\n- healthFacility\n- priority_level\n- complaint_category\n\nComplaint Records:\n{{ JSON.stringify($json.dailySummary) }}\n\nGenerate an executive daily investigation summary following the required structure.\nFocus on identifying systemic patterns, operational risks, and statistically relevant trends.\nEnsure quantitative indicators are clearly calculated and presented taking into consideration the original Complaint Records.\n\nGenerates output in a professionally structured and easy-to-read HTML format, do not include html head information.\nOutput constraint:\nReturn ONLY the inner HTML markup required to format the text content.\nDo NOT generate a full HTML document.\nDo NOT include <html>, <head>, <body>, <style>, <script>, or layout container <div> elements intended to simulate a page.\nAssume the HTML will be injected inside an existing <body> container.",
+        "options": {
+          "systemMessage": "You are an Executive Investigation Intelligence Assistant working for a health institution oversight unit.\n\nYour task is to analyze all complaint investigation records received during a specific day and generate a concise executive summary report.\n\nYou must operate with:\n\nAnalytical objectivity\nInstitutional professionalism\nDecision-support orientation\nQuantitative reasoning\nPrimary Objectives\nSynthesize investigator observations\nRead the field investigator_observations from all complaints.\nIdentify recurring patterns, systemic risks, and notable incidents.\nHighlight critical operational, clinical, administrative, or ethical concerns.\nProvide quantified operational indicators\nYou must communicate and clearly present:\nTotal number of complaints (based on individual, non-summarized data received)\nNumber and percentage of anonymous complaints\nNumber and percentage of complainants requesting follow-up\nDistribution of complaints by health facility\nDistribution by complaint category\nDistribution by priority level\nTemporal reference based on incidentDate\nDetect institutional risk signals\nIdentify clusters of incidents by facility or category\nIdentify trends suggesting potential malpractice, fraud, safety risk, or service degradation\nHighlight urgent matters requiring executive attention\nSupport executive decision-making\nProvide clear interpretation of what the numbers mean operationally\nSuggest areas requiring monitoring, escalation, or preventive intervention\nBehavioral Rules\nDo not invent data that is not present.\nAggregate information logically and transparently.\nMaintain neutral and professional tone.\nAvoid legal conclusions or assigning blame.\nFocus on clarity, insight, and actionability.\nOutput Structure\n\nAlways produce the report using the following structure:\n\nExecutive Overview\nKey Quantitative Indicators\nOperational Risk Patterns\nNotable Investigator Insights\nRecommended Executive Actions\n\nThe final summary must be clear, structured, and suitable for senior management review."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -96,
+        944
+      ],
+      "id": "0252d74f-d130-49b1-ae9c-8e328481b760",
+      "name": "AI Agent Exec Summary"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        512
+      ],
+      "id": "afa61630-137d-4230-a0d2-35f6bc4afd9e",
+      "name": "Gemini Classification",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wXbrOi4b9Ga4fCyt",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        1120
+      ],
+      "id": "5a8fe695-32cb-4766-a4a0-1131cc68f4b1",
+      "name": "Gemini Classification1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wXbrOi4b9Ga4fCyt",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "5240f71c-859e-4c3b-80a9-a9414b8bfb20",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -512,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"fullName\": \"\",\n  \"personalId\": \"\",\n  \"phone\": \"\",\n  \"email\": \"\",\n  \"incidentDate\": \"\",\n  \"incidentTime\": \"\",\n  \"healthFacility\": \"\",\n  \"department\": \"\",\n  \"complaintDetails\": \"\",\n  \"anonymous\": \"\",\n  \"followUp\": \"\"\n}"
+      },
+      "id": "6fa41cd1-e40e-4176-9597-8e8c9c63d0fb",
+      "name": "Extract Complaint Data",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        384
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "COMPLETE_INFORMATION",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "61dfe64c-1c3e-47c0-8e59-cbc7118e14fd",
+      "name": "Check If Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -320,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $ifEmpty($('Telegram Trigger').item.json.message.chat.id, '') !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "c6ec1144-e82a-4d84-9ed3-1228b261fef8",
+      "name": "Check Source",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "975e6b4a-cdc9-4f0f-b2a8-6a4087d9399e",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        208
+      ],
+      "webhookId": "afddd9af-6aa5-4ee2-ad03-90935910a1e4",
+      "credentials": {
+        "telegramApi": {
+          "id": "TLqH0LxwiaCOLZ65",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are a complaint collection assistant for a healthcare institution. Your goal is to gather comprehensive information about a complaint or incident in a conversational and empathetic manner.\n\nWhen initiating the conversation:\nAfter greeting or welcoming the person, you should ask if they wish to file an anonymous complaint.\n\nYou must collect the following information if the complaint is anonymous:\n1. Date of the incident (format: YYYY-MM-DD)\n2. Name of the clinic or hospital\n3. Complete details of the complaint\n\nIf the complaint is not anonymous, you must collect the following information:\n1. Full name\n2. National identification number\n3. Contact phone number\n4. Email address\n5. Date of the incident (format: YYYY-MM-DD)\n6. Time of the incident (format: HH:MM)\n7. Name of the clinic or hospital\n8. Name of the area or department\n9. Complete details of the complaint\n10. Whether follow-up is desired (yes/no)\n\nOnce you collect the necessary information, use this format (Always In This JSON Structure)\n{\n  \"fullName\": \"\",\n  \"personalId\": \"\",\n  \"phone\": \"\",\n  \"email\": \"\",\n  \"incidentDate\": \"\",\n  \"incidentTime\": \"\",\n  \"healthFacility\": \"\",\n  \"department\": \"\",\n  \"complaintDetails\": \"\",\n  \"anonymous\": \"\",\n  \"followUp\": \"\"\n}\n\nINSTRUCTIONS:\n- Ask ONE question at a time\n- Be empathetic and professional\n- If the user provides multiple pieces of information at once, accept them\n- Verify formats (dates, emails, phone numbers)\n- If information is missing, ask specifically for it, depending on whether it is an anonymous complaint or not.\n- Once you have ALL the information, confirm with the user before finalizing.\n- Once confirmed, reply with the json format indicated and add EXACTLY: COMPLETE_INFORMATION\n\nMaintain a professional but friendly tone in English."
+        }
+      },
+      "id": "d8bd82c4-e74b-4445-bd59-e36df7d27069",
+      "name": "Telegram Conversation Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -608,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Telegram Conversation Agent').item.json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "bd578081-8713-4289-b13f-0991005f6412",
+      "name": "Send Telegram Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        288
+      ],
+      "webhookId": "15b9f03e-fb8c-4f04-9894-faab0f0b23b0",
+      "credentials": {
+        "telegramApi": {
+          "id": "TLqH0LxwiaCOLZ65",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Thank you for reporting your complaint. Your case has been registered with the number {{ $('Telegram to Json').item.json.case_number }}. Our investigation team will review it and contact you soon.",
+        "additionalFields": {}
+      },
+      "id": "18ec289d-47d6-4f75-a57a-2df8a8005959",
+      "name": "Send Telegram Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        96
+      ],
+      "webhookId": "6ce0cd1e-000c-41e6-ae6d-317adfd8f8d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "TLqH0LxwiaCOLZ65",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "832835b7-6630-4a88-8cf6-a105feb6bd4d",
+      "name": "Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        384
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wXbrOi4b9Ga4fCyt",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY",
+          "mode": "list",
+          "cachedResultName": "CSE499-records",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1776348430,
+          "mode": "list",
+          "cachedResultName": "DailySummary",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit#gid=1776348430"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "summary": "={{ $json.output }}",
+            "submissionDate": "={{ $now.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "submissionDate",
+              "displayName": "submissionDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        1024
+      ],
+      "id": "81ef2067-3bbd-4315-b7fa-b22b992352e2",
+      "name": "Append DailySummary",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yS0ugCd71Yvpa6Z3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node\n\nfunction extractJsonFromText(text) {\n\n  if (!text) return null;\n\n  // Buscar bloque ```json ... ```\n  const blockMatch = text.match(/```json\\s*([\\s\\S]*?)\\s*```/i);\n\n  if (blockMatch) {\n    return JSON.parse(blockMatch[1]);\n  }\n\n  // Buscar cualquier JSON en el texto\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n\n  if (jsonMatch) {\n    return JSON.parse(jsonMatch[0]);\n  }\n\n  throw new Error(\"No JSON object found in text\");\n}\n\n\n// Generador de case_number\nfunction generateCaseNumber(length = 15) {\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";\n  let result = \"\";\n\n  for (let i = 0; i < length; i++) {\n    result += chars.charAt(Math.floor(Math.random() * chars.length));\n  }\n\n  return result;\n}\n\n\nconst results = [];\n\nfor (const item of items) {\n\n  const rawText =\n    item.json.text ||\n    item.json.body ||\n    item.json.message ||\n    item.json.output ||\n    item.json.response ||\n    \"\";\n\n  try {\n\n    const data = extractJsonFromText(rawText);\n\n    const now = new Date();\n    const iso = now.toISOString();\n\n    const submissionDate = iso.split(\"T\")[0];\n    const submissionTime = iso.split(\"T\")[1].split(\".\")[0];\n\n    const cleanOutput = {\n      case_number: generateCaseNumber(),\n      fullName: data.fullName || \"\",\n      email: data.email || \"\",\n      phone: data.phone || \"\",\n      incidentDate: data.incidentDate || \"\",\n      incidentTime: data.incidentTime || \"\",\n      healthFacility: data.healthFacility || \"\",\n      department: data.department || \"\",\n      complaintDetails: data.complaintDetails || \"\",\n      anonymous: data.anonymous || \"\",\n      followUp: data.followUp || \"\",\n      personalId: data.personalId || \"\",\n      submissionDate: submissionDate,\n      submissionTime: submissionTime\n    };\n\n    results.push({\n      json: cleanOutput\n    });\n\n  } catch (error) {\n\n    results.push({\n      json: {\n        error: \"JSON extraction failed\",\n        details: error.message,\n        receivedText: rawText\n      }\n    });\n\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        144
+      ],
+      "id": "55fd6da0-3984-4748-b618-2fa36b3707d6",
+      "name": "Telegram to Json"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY",
+          "mode": "list",
+          "cachedResultName": "CSE499-records",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1959860981,
+          "mode": "list",
+          "cachedResultName": "ComplaintsDB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit#gid=1959860981"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "caseNumber": "={{ $('Telegram to Json').item.json.case_number }}",
+            "fullName": "={{ $('Telegram to Json').item.json.fullName }}",
+            "email": "={{ $('Telegram to Json').item.json.email }}",
+            "phone": "={{ $('Telegram to Json').item.json.phone }}",
+            "incidentDate": "={{ $('Telegram to Json').item.json.incidentDate }}",
+            "anonymous": "={{ $('Telegram to Json').item.json.anonymous }}",
+            "personalId": "={{ $('Telegram to Json').item.json.personalId }}",
+            "followUp": "={{ $('Telegram to Json').item.json.followUp }}",
+            "incidentTime": "={{ $('Telegram to Json').item.json.incidentTime }}",
+            "healthFacility": "={{ $('Telegram to Json').item.json.healthFacility }}",
+            "department": "={{ $('Telegram to Json').item.json.department }}",
+            "complaintDetails": "={{ $('Telegram to Json').item.json.complaintDetails }}",
+            "recommended_next_action": "={{ $json.output.recommended_next_action }}",
+            "investigator_observations": "={{ $json.output.investigator_observations }}",
+            "reformulated_complaint": "={{ $json.output.reformulated_complaint }}",
+            "priority_level": "={{ $json.output.priority_level }}",
+            "missing_information": "={{ $json.output.missing_information }}",
+            "investigative_summary": "={{ $json.output.investigative_summary }}",
+            "key_entities_detected": "={{ $json.output.key_entities_detected }}",
+            "complaint_category": "={{ $json.output.complaint_category }}",
+            "submissionDate": "={{ $('Telegram to Json').item.json.submissionDate }}",
+            "submissionTime": "={{ $('Telegram to Json').item.json.submissionTime }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "caseNumber",
+              "displayName": "caseNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submissionDate",
+              "displayName": "submissionDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submissionTime",
+              "displayName": "submissionTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "anonymous",
+              "displayName": "anonymous",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fullName",
+              "displayName": "fullName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personalId",
+              "displayName": "personalId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followUp",
+              "displayName": "followUp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "incidentDate",
+              "displayName": "incidentDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "incidentTime",
+              "displayName": "incidentTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "healthFacility",
+              "displayName": "healthFacility",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "complaintDetails",
+              "displayName": "complaintDetails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommended_next_action",
+              "displayName": "recommended_next_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "investigator_observations",
+              "displayName": "investigator_observations",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reformulated_complaint",
+              "displayName": "reformulated_complaint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority_level",
+              "displayName": "priority_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "missing_information",
+              "displayName": "missing_information",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "investigative_summary",
+              "displayName": "investigative_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "key_entities_detected",
+              "displayName": "key_entities_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "complaint_category",
+              "displayName": "complaint_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        96
+      ],
+      "id": "ac21748f-3ed5-4ee0-a0c6-05567e6c079d",
+      "name": "Append Telegram row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yS0ugCd71Yvpa6Z3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY",
+          "mode": "list",
+          "cachedResultName": "CSE499-records",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1959860981,
+          "mode": "list",
+          "cachedResultName": "ComplaintsDB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY/edit#gid=1959860981"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "caseNumber": "={{ $('Complaint-Form-Trigger').item.json.body.case_number }}",
+            "fullName": "={{ $('Complaint-Form-Trigger').item.json.body.fullName }}",
+            "email": "={{ $('Complaint-Form-Trigger').item.json.body.email }}",
+            "phone": "={{ $('Complaint-Form-Trigger').item.json.body.phone }}",
+            "incidentDate": "={{ $('Complaint-Form-Trigger').item.json.body.incidentDate }}",
+            "anonymous": "={{ $('Complaint-Form-Trigger').item.json.body.anonymous }}",
+            "personalId": "={{ $('Complaint-Form-Trigger').item.json.body.personalId }}",
+            "followUp": "={{ $('Complaint-Form-Trigger').item.json.body.followUp }}",
+            "incidentTime": "={{ $('Complaint-Form-Trigger').item.json.body.incidentTime }}",
+            "healthFacility": "={{ $('Complaint-Form-Trigger').item.json.body.healthFacility }}",
+            "department": "={{ $('Complaint-Form-Trigger').item.json.body.department }}",
+            "complaintDetails": "={{ $('Complaint-Form-Trigger').item.json.body.complaintDetails }}",
+            "recommended_next_action": "={{ $json.output.recommended_next_action }}",
+            "investigator_observations": "={{ $json.output.investigator_observations }}",
+            "reformulated_complaint": "={{ $json.output.reformulated_complaint }}",
+            "priority_level": "={{ $json.output.priority_level }}",
+            "missing_information": "={{ $json.output.missing_information }}",
+            "investigative_summary": "={{ $json.output.investigative_summary }}",
+            "key_entities_detected": "={{ $json.output.key_entities_detected }}",
+            "complaint_category": "={{ $json.output.complaint_category }}",
+            "submissionDate": "={{ $('Complaint-Form-Trigger').item.json.body.submissionDate }}",
+            "submissionTime": "={{ $('Complaint-Form-Trigger').item.json.body.submissionTime }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "caseNumber",
+              "displayName": "caseNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submissionDate",
+              "displayName": "submissionDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submissionTime",
+              "displayName": "submissionTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "anonymous",
+              "displayName": "anonymous",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fullName",
+              "displayName": "fullName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personalId",
+              "displayName": "personalId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followUp",
+              "displayName": "followUp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "incidentDate",
+              "displayName": "incidentDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "incidentTime",
+              "displayName": "incidentTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "healthFacility",
+              "displayName": "healthFacility",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "complaintDetails",
+              "displayName": "complaintDetails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommended_next_action",
+              "displayName": "recommended_next_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "investigator_observations",
+              "displayName": "investigator_observations",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reformulated_complaint",
+              "displayName": "reformulated_complaint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority_level",
+              "displayName": "priority_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "missing_information",
+              "displayName": "missing_information",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "investigative_summary",
+              "displayName": "investigative_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "key_entities_detected",
+              "displayName": "key_entities_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "complaint_category",
+              "displayName": "complaint_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        304
+      ],
+      "id": "f300e781-7d88-4397-b376-a9695ea981a8",
+      "name": "Append Web Form row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yS0ugCd71Yvpa6Z3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Complaint-Form-Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent Classification",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate Rows": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Exec Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check FollowUp": {
+      "main": [
+        [
+          {
+            "node": "Reply User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Classification": {
+      "main": [
+        [
+          {
+            "node": "Check Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Exec Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Daily Summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append DailySummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Classification": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Classification",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Classification1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Exec Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Telegram Conversation Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Complaint Data": {
+      "ai_outputParser": [
+        []
+      ]
+    },
+    "Check If Complete": {
+      "main": [
+        [
+          {
+            "node": "Telegram to Json",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Source": {
+      "main": [
+        [
+          {
+            "node": "Append Telegram row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append Web Form row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Telegram Conversation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Conversation Agent": {
+      "main": [
+        [
+          {
+            "node": "Check If Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Telegram Conversation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Daily Summary": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram to Json": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Telegram row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Web Form row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Check FollowUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b4d58499-754a-4b46-8866-6ea936c70fa4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bcf6085b5725294f75d23dd80b49476bb2be7bb8d907a1ce1ffc555fd26f6ef6"
+  },
+  "id": "0zdfuXetI3I8Ypqd",
+  "tags": []
+}
