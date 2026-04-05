@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | SSCS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles/admin.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-inner nav-inner--dashboard">
+            <a href="../index.html" class="logo">
+                <div class="logo-mark">SS</div>
+                <div class="logo-text">
+                    <strong>SSCS</strong>
+                    <span>Admin Dashboard</span>
+                </div>
+            </a>
+            <div class="nav-right">
+                <span class="nav-user" id="navUser">Welcome back</span>
+                <button class="btn-logout" id="logoutBtn">
+                    <!-- Heroicons: arrow-right-on-rectangle -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="dashboard">
+        <div class="dashboard-inner">
+
+            <!-- Page header -->
+            <div class="dashboard-header">
+                <div>
+                    <p class="section-label">Overview</p>
+                    <h1 class="dashboard-title">Complaints Dashboard</h1>
+                </div>
+                <div class="dashboard-date" id="dashboardDate"></div>
+            </div>
+
+            <!-- Stats cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon stat-card-icon--blue">
+                        <!-- Heroicons: document-text -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">Total Complaints</span>
+                        <span class="stat-card-value" id="statTotal">—</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-icon stat-card-icon--amber">
+                        <!-- Heroicons: clock -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">Pending Review</span>
+                        <span class="stat-card-value" id="statPending">—</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-icon stat-card-icon--green">
+                        <!-- Heroicons: check-circle -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">Resolved</span>
+                        <span class="stat-card-value" id="statResolved">—</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-icon stat-card-icon--red">
+                        <!-- Heroicons: exclamation-circle -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">High Severity</span>
+                        <span class="stat-card-value" id="statHigh">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints table -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <h2 class="table-card-title">Recent Complaints</h2>
+                    <span class="table-badge">Placeholder data — connect n8n to populate</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="complaints-table">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaintsBody">
+                            <!-- Placeholder rows -->
+                            <tr>
+                                <td><span class="case-id">SSCS-2604-11201</span></td>
+                                <td>Maria Gonzalez</td>
+                                <td>maria@email.com</td>
+                                <td class="td-description">Incorrect billing charges after procedure at General
+                                    Hospital.</td>
+                                <td>Apr 1, 2026</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="case-id">SSCS-2604-11202</span></td>
+                                <td>John Smith</td>
+                                <td>john@email.com</td>
+                                <td class="td-description">Misdiagnosis leading to delayed treatment for three months.
+                                </td>
+                                <td>Apr 2, 2026</td>
+                                <td><span class="status-badge status-review">Under Review</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="case-id">SSCS-2604-11203</span></td>
+                                <td>Ana Torres</td>
+                                <td>ana@email.com</td>
+                                <td class="td-description">Privacy breach — medical records shared without consent.</td>
+                                <td>Apr 3, 2026</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="case-id">SSCS-2604-11204</span></td>
+                                <td>Carlos Rivera</td>
+                                <td>carlos@email.com</td>
+                                <td class="td-description">Denied access to emergency care due to insurance issues.</td>
+                                <td>Apr 3, 2026</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <p class="table-note">
+                        <!-- Heroicons: information-circle -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                        </svg>
+                        This table will be connected to Google Sheets via n8n in the next sprint.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../scripts/admin.js"></script>
+    <script src="../scripts/dashboard.js"></script>
+</body>
+
+</html>
