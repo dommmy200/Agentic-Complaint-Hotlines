@@ -1,0 +1,90 @@
+{
+  "name": "Pipeline 2 - Telegram Bot Intake",
+  "description": "Multi-turn Telegram conversation collects complaint, detects completion, extracts JSON, classifies, stores to Sheets",
+  "nodes": [
+    {
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [250, 300],
+      "parameters": {
+        "updates": ["message"]
+      }
+    },
+    {
+      "name": "Telegram Conversation Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [450, 300],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "// Collects: anonymous flag, incidentDate, healthFacility\n// If non-anonymous also: fullName, personalId, phone\n// email, incidentTime, department, complaintDetails, followUp\n// Ends with JSON block + COMPLETE_INFORMATION keyword"
+        }
+      },
+      "subNodes": {
+        "chatModel": "Google Gemini (temp: 0.3)",
+        "memory": "Window Buffer Memory (sessionKey: message.chat.id, window: 10)"
+      }
+    },
+    {
+      "name": "Check If Complete",
+      "type": "n8n-nodes-base.if",
+      "position": [650, 300],
+      "parameters": {
+        "condition": "{{ $json.output contains 'COMPLETE_INFORMATION' }}"
+      }
+    },
+    {
+      "name": "Telegram to Json",
+      "type": "n8n-nodes-base.code",
+      "position": [850, 200],
+      "parameters": {
+        "language": "javascript",
+        "code": "// See scripts/telegram-to-json.js\n// Strips markdown fences from AI output\n// Extracts JSON block\n// Generates case_number\n// Adds submissionDate and submissionTime"
+      }
+    },
+    {
+      "name": "AI Agent Classification",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [1050, 200],
+      "parameters": {
+        "note": "Shared with Pipeline 1 — same classification logic"
+      }
+    },
+    {
+      "name": "Append Telegram row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [1250, 200],
+      "parameters": {
+        "operation": "append",
+        "sheetName": "ComplaintsDB",
+        "columns": {
+          "caseNumber": "={{ $('Telegram to Json').item.json.case_number }}",
+          "fullName": "={{ $('Telegram to Json').item.json.fullName }}",
+          "anonymous": "={{ $('Telegram to Json').item.json.anonymous }}",
+          "followUp": "={{ $('Telegram to Json').item.json.followUp }}"
+        }
+      }
+    },
+    {
+      "name": "Send Telegram Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "position": [1450, 200],
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Your complaint has been registered. Case: {{ $json.case_number }}"
+      }
+    },
+    {
+      "name": "Send Telegram Response",
+      "type": "n8n-nodes-base.telegram",
+      "position": [850, 400],
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Telegram Conversation Agent').item.json.output }}",
+        "note": "Continues conversation when COMPLETE_INFORMATION not yet detected"
+      }
+    }
+  ],
+  "flow": "Telegram Trigger → Conversation Agent (multi-turn) → Check Complete → [TRUE: Extract JSON → Classify → Append → Confirm] [FALSE: Send Response → loop]"
+}
