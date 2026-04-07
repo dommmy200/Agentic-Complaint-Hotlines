@@ -1,0 +1,80 @@
+{
+  "name": "Pipeline 3 - Daily Executive Summary",
+  "description": "Scheduled daily job reads previous day complaints, aggregates, generates executive HTML report, emails investigator, saves to DailySummary sheet",
+  "nodes": [
+    {
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [250, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{"hours": 24}],
+          "triggerAt": "08:00"
+        }
+      }
+    },
+    {
+      "name": "Get row(s) in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [450, 300],
+      "parameters": {
+        "operation": "read",
+        "sheetName": "ComplaintsDB",
+        "filter": {
+          "column": "submissionDate",
+          "value": "={{ $now.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+        }
+      }
+    },
+    {
+      "name": "Consolidate Rows",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [650, 300],
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dailySummary",
+        "fieldsToInclude": "anonymous, followUp, incidentDate, healthFacility, investigator_observations, priority_level, complaint_category"
+      }
+    },
+    {
+      "name": "AI Agent Exec Summary",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [850, 300],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.dailySummary) }}",
+        "options": {
+          "systemMessage": "// Executive Investigation Intelligence Assistant\n// Produces HTML report with:\n// - Total complaints, anonymous %, follow-up %\n// - Distribution by facility, category, priority\n// - Risk pattern detection\n// - Recommended executive actions"
+        }
+      },
+      "subNodes": {
+        "chatModel": "Google Gemini (temp: 0.3)"
+      }
+    },
+    {
+      "name": "Send Daily Summary",
+      "type": "n8n-nodes-base.gmail",
+      "position": [1050, 200],
+      "parameters": {
+        "sendTo": "investigator@demo.com",
+        "subject": "Daily Summary - {{ $today.minus(1, 'days').toFormat('yyyy-MM-dd') }}",
+        "message": "={{ $json.output }}",
+        "messageType": "html"
+      }
+    },
+    {
+      "name": "Append DailySummary",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [1050, 400],
+      "parameters": {
+        "operation": "append",
+        "sheetName": "DailySummary",
+        "columns": {
+          "submissionDate": "={{ $now.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}",
+          "summary": "={{ $json.output }}"
+        }
+      }
+    }
+  ],
+  "flow": "Schedule (daily 08:00) → Read yesterday's rows → Aggregate → AI Executive Summary → [Gmail to investigator] + [Append DailySummary tab]"
+}
