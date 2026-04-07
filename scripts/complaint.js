@@ -238,28 +238,31 @@ if (form) {
         document.getElementById('caseNumber').value = caseNumber;
         document.getElementById('timestamp').value  = new Date().toISOString();
 
+        // ── Calculate submission date/time (always sent as hidden fields) ──
+        const now            = new Date();
+        const submissionDate = now.toISOString().slice(0, 10);          // YYYY-MM-DD
+        const submissionTime = now.toTimeString().slice(0, 5);          // HH:MM
+
         // ── Build payload ────────────────────────────
-        // Field names match the n8n preprocess.md validation script:
-        //   required: fullName, email, description, facilityName
+        // All 14 fields are always sent regardless of anonymous choice.
+        // Personal fields are empty strings when the user is anonymous.
         const payload = {
             caseNumber,
+            submissionDate,                                              // ← always present
+            submissionTime,                                              // ← always present
             anonymous:    isAnonymous,
+            fullName:     isAnonymous ? '' : (fullNameInput  ? fullNameInput.value.trim()                              : ''),
+            personalId:   isAnonymous ? '' : ((document.getElementById('personalId') || {}).value || ''),
+            phone:        isAnonymous ? '' : ((document.getElementById('phone')      || {}).value || ''),
+            email:        isAnonymous ? '' : (emailInput     ? emailInput.value.trim()                                 : ''),
+            followUp:     isAnonymous ? '' : ((document.getElementById('followUp')   || {}).value || ''),
             incidentDate: document.getElementById('incidentDate').value,
             incidentTime: (document.getElementById('incidentTime') || {}).value || '',
+            healthFacility: document.getElementById('healthFacility').value, // ← key corrected (was facilityName)
             department:   (document.getElementById('department')   || {}).value || '',
-            facilityName: document.getElementById('healthFacility').value,  // mapped to match n8n
-            description:  descriptionVal,                                   // mapped to match n8n
+            description:  descriptionVal,
             timestamp:    document.getElementById('timestamp').value,
         };
-
-        // Personal fields are only included when the user is not anonymous
-        if (!isAnonymous) {
-            payload.fullName   = fullNameInput  ? fullNameInput.value.trim()  : '';
-            payload.email      = emailInput     ? emailInput.value.trim()     : '';
-            payload.personalId = (document.getElementById('personalId') || {}).value || '';
-            payload.phone      = (document.getElementById('phone')      || {}).value || '';
-            payload.followUp   = (document.getElementById('followUp')   || {}).value || '';
-        }
 
         setSubmitLoading(true);
 
