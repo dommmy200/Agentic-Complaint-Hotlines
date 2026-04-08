@@ -22,7 +22,7 @@ Each team member has added one of their favorite quotes as part of the project c
 
 ### Bloodshed Munyaradzi Chiondegwa
 
->
+> "Any sufficiently adavanced technology is indistingushable from magic" - Arthur C. Clarke
 
 ### Diego Armando Vargas Diaz
 
