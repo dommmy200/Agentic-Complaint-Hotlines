@@ -1,83 +1,52 @@
 # 🏥 CSE499 — Health & Administrative Complaint Reporting System
 
-> A demo-grade web platform for reporting malpractice complaints in health and administrative services, built as a capstone project for CSE499.
-
----
-### Project Proposed By
-
+Hotline for Complaints with Agent
+CSE 499 – Final Group Project
+Project Proposed By
 Herick Guillen
-
-### Team Members
-
-- Bloodshed Munyaradzi Chiondegwa
-- Diego Armando Vargas Diaz
-- Dominic Odeh Abah
-- Herick Guillen
-
----
-
-## Team Quotes
-
+Team Members
+•	Bloodshed Munyaradzi Chiondegwa
+•	Diego Armando Vargas Diaz
+•	Dominic Odeh Abah
+•	Herick Guillen
+Team Quotes
 Each team member has added one of their favorite quotes as part of the project collaboration exercise.
+Bloodshed Munyaradzi Chiondegwa
+"Any sufficiently advanced technology is indistinguishable from magic." — Arthur C. Clarke
+Diego Armando Vargas Diaz
+"Our part in this divine plan is to trust in God and seek divine helps, most notably the Atonement of His Beloved Son, our Savior and Redeemer Jesus Christ." — President Dallin H. Oaks
+Dominic Odeh Abah
+"The more I learn, the more I realize how much I don't know." — Albert Einstein
+Herick Guillen
+"Goals reflect the desires of our hearts and our vision of what we can accomplish. Through goals and plans, our hopes are transformed into action. Goal setting and planning are acts of faith." — Preach My Gospel, Chapter 8
 
-### Bloodshed Munyaradzi Chiondegwa
-
-> "Any sufficiently adavanced technology is indistingushable from magic" - Arthur C. Clarke
-
-### Diego Armando Vargas Diaz
-
-> “Our part in this divine plan is to trust in God and seek divine helps, most notably the Atonement of His Beloved Son, our Savior and Redeemer Jesus Christ.” - President Dallin H. Oaks
-
-### Dominic Odeh Abah
-
-> “The more I learn, the more I realize how much I don't know.” - Albert Einstein
-
-### Herick Guillen
-
-> "Goals reflect the desires of our hearts and our vision of what we can accomplish. Through goals and plans, our hopes are transformed into action. Goal setting and planning are acts of faith." -Preach My Gospel, Chapter 8
-
----
-
-## Purpose
-
+Purpose
 The purpose of this project is to build a web platform that allows users to submit complaints related to malpractice in health or administrative services. The system will store complaint information in a database and interact with an AI agent that can analyze the complaint, gather additional information if necessary, and generate summaries to help investigators review cases efficiently.
-
 This platform aims to simplify the reporting process while improving the quality and organization of complaint data.
----
 
-## 📋 Table of Contents
+📋 Table of Contents
+•	Project Overview
+•	System Architecture
+•	Features
+•	Tech Stack
+•	Repository Structure
+•	Setup & Installation
+•	Workflow Pipelines
+•	Frontend
+•	Google Sheets Database
+•	Environment Variables
+•	Demo
+•	Team
 
-- [Project Overview](#project-overview)
-- [System Architecture](#system-architecture)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Repository Structure](#repository-structure)
-- [Setup & Installation](#setup--installation)
-- [Workflow Pipelines](#workflow-pipelines)
-- [Frontend](#frontend)
-- [Google Sheets Database](#google-sheets-database)
-- [Environment Variables](#environment-variables)
-- [Demo](#demo)
-- [Team](#team)
-
----
-
-## Project Overview
-
+Project Overview
 This system allows members of the public to submit complaints related to malpractice in health and administrative services. Complaints are:
+•	Received via a web form or Telegram bot
+•	Processed by an AI agent (Google Gemini) that validates, classifies, and gathers additional information through follow-up questions
+•	Stored in a Google Sheets database
+•	Summarised daily and delivered to investigators via email
+⚠️ This is a demo system built for academic purposes. It is not intended for production use.
 
-- Received via a **web form** or **Telegram bot**
-- Processed by an **AI agent** (Google Gemini) that validates, classifies, and gathers additional information through follow-up questions
-- Stored in a **Google Sheets database**
-- Summarised daily and delivered to investigators via **email**
-
-> ⚠️ This is a **demo system** built for academic purposes. It is not intended for production use.
-
----
-
-## System Architecture
-
-```
+System Architecture
 User (Web Form)
       ↓
 Pipeline 1 — Web Intake
@@ -113,157 +82,123 @@ Google Sheets (ComplaintsDB) — read yesterday's rows
 AI Agent (Executive Report)
       ↓
 Gmail → Investigator + DailySummary Sheet
-```
 
----
+Features
+Complaint Intake
+•	Web form with structured fields (facility, incident date, complaint type, severity, witnesses)
+•	Telegram bot alternative channel for users without web access
+•	Anonymous complaint option
+•	AI-driven follow-up questions for incomplete submissions
+•	Multi-turn conversation memory (Postgres-backed per case number)
+AI Processing
+•	Complaint validation and severity classification
+•	Structured JSON output via Output Parser
+•	Categorisation: MEDICAL_CARE, ADMINISTRATIVE_BILLING_INSURANCE, STAFF_MISCONDUCT, SECURITY_OR_CRIMINAL, INFRASTRUCTURE_SERVICE_QUALITY, OTHER
+•	Priority levels: HIGH, MEDIUM, LOW
+•	Reformulated complaint in formal institutional language
+•	Missing information detection
+Admin Portal
+•	Admin registration and login with secure password hashing (bcrypt)
+•	JWT-based session management (2-hour token, HttpOnly cookie)
+•	Password reset via email link (nodemailer + 1-hour expiry token)
+•	Protected admin dashboard routes via middleware authentication
+Investigator Support
+•	Daily executive HTML summary report via Gmail
+•	Structured investigator briefing per complaint
+•	Key entities detection (departments, staff roles, financial elements, safety risks)
+•	Recommended next action per case
 
-## Features
+Tech Stack
+Layer	Technology
+Automation	n8n (cloud-hosted)
+AI / LLM	Google Gemini 2.5 Flash
+Database	Google Sheets (complaints) · Supabase/PostgreSQL (admin users & memory)
+Email	Gmail via OAuth2 · nodemailer (password reset)
+Messaging	Telegram Bot API
+Auth	JSON Web Tokens (JWT) · bcryptjs
+Backend	Node.js · Express.js
+Frontend	HTML5 · CSS · Vanilla JavaScript
+Hosting	GitHub Pages
 
-### Complaint Intake
-- Web form with structured fields (facility, incident date, complaint type, severity, witnesses)
-- Telegram bot alternative channel for users without web access
-- Anonymous complaint option
-- AI-driven follow-up questions for incomplete submissions
-- Multi-turn conversation memory (Postgres-backed per case number)
-
-### AI Processing
-- Complaint validation and severity classification
-- Structured JSON output via Output Parser
-- Categorisation: `MEDICAL_CARE`, `ADMINISTRATIVE_BILLING_INSURANCE`, `STAFF_MISCONDUCT`, `SECURITY_OR_CRIMINAL`, `INFRASTRUCTURE_SERVICE_QUALITY`, `OTHER`
-- Priority levels: `HIGH`, `MEDIUM`, `LOW`
-- Reformulated complaint in formal institutional language
-- Missing information detection
-
-### Investigator Support
-- Daily executive HTML summary report via Gmail
-- Structured investigator briefing per complaint
-- Key entities detection (departments, staff roles, financial elements, safety risks)
-- Recommended next action per case
-
-### Frontend
-- Responsive web form
-- Real-time AI conversation UI
-- Case number tracking across follow-up submissions
-- Success card on complaint completion
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Automation** | n8n (cloud-hosted) |
-| **AI / LLM** | Google Gemini 2.5 Flash |
-| **Database** | Google Sheets |
-| **Memory** | PostgreSQL (Supabase) |
-| **Email** | Gmail via OAuth2 |
-| **Messaging** | Telegram Bot API |
-| **Frontend** | HTML, CSS, Vanilla JavaScript |
-| **Hosting** | GitHub Pages |
-
----
-
-## Repository Structure
-
-```
-cse499-complaint-system/
-│
+Repository Structure
+/
 ├── README.md
+├── index.html                  # Main complaint submission page
+├── offline.html                # Shown when the user is offline
+├── 404.html                    # Not found error page
+├── 500.html                    # Server error page
 │
-├── workflows/
-│   ├── pipeline1-web-intake.json         # Webhook → AI intake → Sheets → Gmail
-│   ├── pipeline2-telegram-intake.json    # Telegram bot → AI intake → Sheets
-│   ├── pipeline3-daily-summary.json      # Schedule → Aggregate → Executive report
-│   └── shared-classification-agent.json # Reusable classification agent config
+├── styles/                     # CSS stylesheets
+├── scripts/                    # Client-side JavaScript
+│   ├── extractor.js            # Regex field extraction from complaint description
+│   ├── preprocess.js           # AI agent user prompt template builder
+│   ├── debugger.js             # <case_data> detection and isComplete flag logic
+│   └── telegram-to-json.js    # Strips markdown fences, extracts JSON from Telegram output
+├── images/                     # Image assets
+├── docs/                       # Project documentation
+│   ├── architecture.md
+│   ├── setup.md
+│   └── api-reference.md
 │
-├── scripts/
-│   ├── extractor.js          # Regex field extraction from complaint description
-│   ├── preprocess.js         # AI agent user prompt template builder
-│   ├── debugger.js           # <case_data> detection and isComplete flag logic
-│   └── telegram-to-json.js   # Strips markdown fences, extracts JSON from Telegram output
+├── workflows/                  # n8n workflow JSON exports
+│   ├── complaint-intake.json           # Webhook → AI intake → Sheets → Gmail
+│   ├── investigator-pipeline.json      # Schedule → Aggregate → Executive report
+│   ├── workflow-overview.json          # System overview
+│   └── pipeline2-telegram-intake.json  # Telegram bot → AI intake → Sheets
 │
-├── frontend/
-│   ├── index2.html           # Main complaint form page
-│   ├── styles/
-│   │   └── complaint2.css    # Stylesheet
-│   └── scripts/
-│       └── complaint2.js     # Form logic, webhook calls, conversation UI
-│
-└── docs/
-    ├── architecture.md       # Full system design documentation
-    ├── setup.md              # Step-by-step n8n setup guide
-    └── api-reference.md      # Webhook payload schemas
-```
+└── admin/
+    ├── login.html              # Admin sign-in page
+    ├── register.html           # Admin account creation
+    └── forgot.html             # Password reset request page
+Backend (separate deployment)
+├── server.js                   # Express app entry point
+└── routes/
+    └── auth.js                 # Register, login, logout, /me, forgot, reset
+    middleware/
+    └── auth.js                 # JWT requireAuth middleware
 
----
-
-## Setup & Installation
-
-### Prerequisites
-
-- [n8n account](https://n8n.io) (cloud or self-hosted)
-- Google account with Sheets and Gmail API access
-- Google AI Studio API key ([aistudio.google.com](https://aistudio.google.com))
-- Supabase account for PostgreSQL memory ([supabase.com](https://supabase.com))
-- Telegram Bot Token (via [@BotFather](https://t.me/BotFather)) — optional
-
----
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/group2cse499/complaint-system.git
-cd complaint-system
-```
-
----
-
-### 2. Set Up Google Sheets
-
+Setup & Installation
+Prerequisites
+•	n8n account (cloud or self-hosted)
+•	Google account with Sheets and Gmail API access
+•	Google AI Studio API key (aistudio.google.com)
+•	Supabase account for PostgreSQL memory (supabase.com)
+•	Telegram Bot Token (via @BotFather) — optional
+1. Clone the Repository
+git clone https://github.com/dommmy200/Agentic-Complaint-Hotlines.git
+cd Agentic-Complaint-Hotlines
+2. Set Up Google Sheets
 Create a Google Sheet with two tabs:
-
-**Tab 1 — ComplaintsDB**
-
-| Column | Description |
-|---|---|
-| `caseNumber` | Auto-generated by frontend |
-| `fullName` | Complainant name |
-| `email` | Contact email |
-| `phone` | Contact phone |
-| `incidentDate` | Date of incident |
-| `incidentTime` | Time of incident |
-| `healthFacility` | Facility name |
-| `department` | Department or area |
-| `complaintDetails` | Full complaint text |
-| `anonymous` | true/false |
-| `followUp` | true/false |
-| `complaint_category` | AI classification |
-| `priority_level` | HIGH / MEDIUM / LOW |
-| `reformulated_complaint` | AI rewritten version |
-| `investigative_summary` | AI summary |
-| `investigator_observations` | AI observations |
-| `recommended_next_action` | AI recommendation |
-| `missing_information` | Fields flagged by AI |
-| `key_entities_detected` | JSON object |
-| `submissionDate` | YYYY-MM-DD |
-| `submissionTime` | HH:MM:SS |
-| `status` | pending_review / reviewed |
-
-**Tab 2 — DailySummary**
-
-| Column | Description |
-|---|---|
-| `submissionDate` | Date of summary |
-| `summary` | HTML executive report |
-
----
-
-### 3. Set Up PostgreSQL Memory (Supabase)
-
-1. Create a free project at [supabase.com](https://supabase.com)
-2. Run this SQL in the Supabase SQL editor:
-
-```sql
+Tab 1 — ComplaintsDB
+Column	Description
+caseNumber	Auto-generated by frontend
+fullName	Complainant name
+email	Contact email
+phone	Contact phone
+incidentDate	Date of incident
+incidentTime	Time of incident
+healthFacility	Facility name
+department	Department or area
+complaintDetails	Full complaint text
+anonymous	true/false
+followUp	true/false
+complaint_category	AI classification
+priority_level	HIGH / MEDIUM / LOW
+reformulated_complaint	AI rewritten version
+investigative_summary	AI summary
+investigator_observations	AI observations
+recommended_next_action	AI recommendation
+missing_information	Fields flagged by AI
+key_entities_detected	JSON object
+submissionDate	YYYY-MM-DD
+submissionTime	HH:MM:SS
+status	pending_review / reviewed
+Tab 2 — DailySummary
+Column	Description
+submissionDate	Date of summary
+summary	HTML executive report
+3. Set Up PostgreSQL Memory (Supabase)
+Create a free project at supabase.com and run this SQL in the SQL editor:
 CREATE TABLE IF NOT EXISTS n8n_chat_histories (
     id SERIAL PRIMARY KEY,
     session_id VARCHAR(255) NOT NULL,
@@ -272,73 +207,36 @@ CREATE TABLE IF NOT EXISTS n8n_chat_histories (
 );
 
 CREATE INDEX idx_session_id ON n8n_chat_histories(session_id);
-```
+Copy the connection string from Settings → Database.
+4. Import Workflows into n8n
+1.	Open your n8n canvas
+2.	Click Import → select each JSON file from workflows/
+3.	Import in this order: 
+o	complaint-intake.json
+o	investigator-pipeline.json
+o	pipeline2-telegram-intake.json
+5. Configure Credentials in n8n
+Credential	Where to Get
+Google Gemini API	aistudio.google.com → Get API Key
 
-3. Copy the connection string from **Settings → Database**
-
----
-
-### 4. Import Workflows into n8n
-
-1. Open your n8n canvas
-2. Click **Import** → select each JSON file from `workflows/`
-3. Import in this order:
-   - `pipeline1-web-intake.json`
-   - `pipeline2-telegram-intake.json`
-   - `pipeline3-daily-summary.json`
-
----
-
-### 5. Configure Credentials in n8n
-
-| Credential | Where to Get |
-|---|---|
-| **Google Gemini API** | [aistudio.google.com](https://aistudio.google.com) → Get API Key |
-| **Google Sheets OAuth2** | n8n credential wizard → Google Sheets |
-| **Gmail OAuth2** | n8n credential wizard → Gmail |
-| **PostgreSQL** | Supabase → Settings → Database → Connection string |
-| **Telegram Bot** | [@BotFather](https://t.me/BotFather) → /newbot |
-
----
-
-### 6. Configure Frontend
-
-In `frontend/scripts/complaint2.js`, update:
-
-```javascript
+Google Sheets OAuth2	n8n credential wizard → Google Sheets
+Gmail OAuth2	n8n credential wizard → Gmail
+PostgreSQL	Supabase → Settings → Database → Connection string
+Telegram Bot	@BotFather → /newbot
+6. Configure Frontend
+In scripts/complaint.js, update the webhook URL:
 // Replace with your n8n Production Webhook URL
 const WEBHOOK_URL = 'https://your-n8n-instance.app.n8n.cloud/webhook/your-path';
-```
-
----
-
-### 7. Activate Workflows
-
-In the n8n canvas for each workflow:
-1. Click the **Inactive** toggle (top right)
-2. Confirm it turns green (**Active**)
-
----
-
-### 8. Deploy Frontend
-
-Push to GitHub and enable GitHub Pages:
-
-```bash
+7. Activate Workflows
+In the n8n canvas for each workflow, click the Inactive toggle (top right) and confirm it turns green (Active).
+8. Deploy Frontend
 git add .
 git commit -m "deploy frontend"
 git push origin main
-```
+Then go to: GitHub repo → Settings → Pages → Source: main branch
 
-Then go to: **GitHub repo → Settings → Pages → Source: main branch**
-
----
-
-## Workflow Pipelines
-
-### Pipeline 1 — Web Form Intake
-
-```
+Workflow Pipelines
+Pipeline 1 — Web Form Intake
 Webhook (POST)
     → Code: Extract fields from description
     → AI Agent: Validate + Classify + Follow-up (Gemini + Postgres Memory)
@@ -349,11 +247,7 @@ Webhook (POST)
                → Gmail confirmation to complainant
                → Webhook Response: { status: "complete" }
         FALSE → Webhook Response: { status: "incomplete", aiQuestion: "..." }
-```
-
-### Pipeline 2 — Telegram Bot Intake
-
-```
+Pipeline 2 — Telegram Bot Intake
 Telegram Trigger
     → Conversation Agent (multi-turn, Window Buffer Memory)
     → Check If Complete (detects COMPLETE_INFORMATION keyword)
@@ -362,28 +256,17 @@ Telegram Trigger
                → Append ComplaintsDB
                → Send Telegram Confirmation
         FALSE → Send Telegram Response (continue conversation)
-```
-
-### Pipeline 3 — Daily Executive Summary
-
-```
+Pipeline 3 — Daily Executive Summary
 Schedule Trigger (daily 08:00)
     → Get rows from ComplaintsDB (filter: yesterday's date)
     → Aggregate: consolidate all rows into dailySummary object
     → AI Executive Summary Agent (HTML report)
     → Gmail: send to investigator
     → Append DailySummary sheet
-```
 
----
-
-## Frontend
-
-The web form is located at `frontend/index2.html` and connects to the n8n webhook via `complaint2.js`.
-
-### Conversation Flow
-
-```
+Frontend
+The web form is located at index.html and connects to the n8n webhook via scripts/complaint.js.
+Conversation Flow
 User fills form → Submit
         ↓
 Webhook fires → AI processes
@@ -395,84 +278,72 @@ User answers → Re-fire webhook (same caseNumber)
 Repeat until AI produces <case_data> block
         ↓
 Response: complete → Show success card with case number
-```
+Key Frontend Functions
+Function	Purpose
+generateCaseNumber()	Creates SSCS-YYMM-RANDOM — generated once, reused across follow-ups
+submitToWebhook(data)	POST to n8n with case number and full payload (14 fields always sent)
+handleResponse(response)	Routes to conversation UI or success card
+addMessage(text, sender)	Appends message to conversation view
+renderMessage(text, sender)	Renders only (no history push — prevents duplicates)
+resetAndShowForm()	Clears state for new complaint submission
 
-### Key Frontend Functions
-
-| Function | Purpose |
-|---|---|
-| `generateCaseNumber()` | Creates `SSCS{YYMMDD}-{RAND}` — generated once, reused |
-| `submitToWebhook(data)` | POST to n8n with case number and payload |
-| `handleResponse(response)` | Routes to conversation UI or success card |
-| `addMessage(text, sender)` | Appends message to conversation view |
-| `renderMessage(text, sender)` | Renders only (no history push — prevents duplicates) |
-| `resetAndShowForm()` | Clears state for new complaint submission |
-
----
-
-## Google Sheets Database
-
+Google Sheets Database
 The Google Sheet acts as the central database for this demo system.
-
-**Sheet ID:** `1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY`
-
-| Tab | Purpose |
-|---|---|
-| `ComplaintsDB` | All complaint records from web and Telegram |
-| `DailySummary` | Daily AI-generated executive reports |
-
----
-
-## Environment Variables
-
-No `.env` file is required for the frontend. All sensitive credentials are stored in **n8n Credentials** (never in code).
-
-For local development, the only value to update is the webhook URL in `complaint2.js`.
-
-> ⚠️ Never commit API keys or credentials to this repository.
-
----
-
-## Demo
-
-- **Live Frontend:** [https://dommmy200.github.io](https://dommmy200.github.io)
-- **n8n Instance:** group2cse499.app.n8n.cloud
-- **Telegram Bot:** Contact via demo session
-
-### Test Complaint Payload
-
-```json
+Sheet ID: 1qyfoQffyW6-6D8kUJnbE4QBM2pK9Bw4QLls-Drl-PIY
+Tab	Purpose
+ComplaintsDB	All complaint records from web and Telegram
+DailySummary	Daily AI-generated executive reports
+________________________________________
+Environment Variables
+No .env file is required for the frontend. All sensitive credentials are stored in n8n Credentials (never in code).
+The backend requires the following environment variables:
+Variable	Description
+SUPABASE_URL	Supabase project URL
+SUPABASE_KEY	Supabase service role key
+JWT_SECRET	Secret used to sign JWT tokens
+EMAIL_USER	Gmail address used to send reset emails
+EMAIL_PASS	Gmail app password
+NODE_ENV	development or production
+PORT	Port for the Express server (default: 3000)
+⚠️ Never commit API keys or credentials to this repository.
+________________________________________
+Demo
+•	Live Frontend: https://dommmy200.github.io/Agentic-Complaint-Hotlines
+•	n8n Instance: group2cse499.app.n8n.cloud
+•	Telegram Bot: Contact via demo session
+Test Complaint Payload
 {
-  "caseNumber": "SSCS260328-0001",
+  "caseNumber": "SSCS-2603-00001",
   "fullName": "Test User",
   "email": "test@example.com",
-  "description": "• Incident Date: 2025-12-13\n• Facility: Test Hospital\n• Complaint Type: billing\n• Reported Severity: medium\nThe hospital charged incorrectly for services not rendered.",
-  "isFollowUp": false,
-  "timestamp": "2026-03-28T10:00:00.000Z"
+  "anonymous": false,
+  "incidentDate": "2026-03-28",
+  "incidentTime": "10:00",
+  "healthFacility": "Test Hospital",
+  "department": "Billing",
+  "description": "The hospital charged incorrectly for services not rendered.",
+  "submissionDate": "2026-03-28",
+  "submissionTime": "10:00",
+  "followUp": "false",
+  "phone": "",
+  "personalId": ""
 }
-```
+________________________________________
+Team
+Group 2 — CSE499 Capstone · Academic Year 2025/2026
+Name	Role
+Herick Guillen (Team Lead)	Backend · n8n Workflow Automation · AI Agent Configuration
+Dominic Odeh Abah	Backend · n8n Workflow Automation · AI Agent Configuration
+Diego Armando Vargas Diaz	Frontend Development · Admin Dashboard
+Bloodshed Munyaradzi Chiondegwa	Frontend Development · n8n Integration · API Field Mapping
 
----
+Built with n8n · Google Gemini · Google Sheets · Supabase · GitHub Pages
 
-## Team
 
-**Group 2 — CSE499 Capstone**
 
-| Name | Role |
-|---|---|
-| Abah Dominic Odeh | Frontend, n8n Workflow, AI Configuration |
-| *(add teammates)* | *(add roles)* |
 
-**Supervisor:** *(add supervisor name)*
-**Institution:** *(add institution name)*
-**Academic Year:** 2025/2026
 
----
 
-## License
 
-This project is submitted as an academic capstone demo. All rights reserved by the authors and institution.
 
----
 
-*Built with n8n · Google Gemini · Google Sheets · Supabase · GitHub Pages*
