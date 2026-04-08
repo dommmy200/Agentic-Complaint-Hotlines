@@ -326,6 +326,28 @@
                         </div>
                     </div>
 
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="complaintType">Complaint Type <span class="req">*</span></label>
+                            <select id="complaintType" name="complaintType" required>
+                                <option value="">Select type</option>
+                                <option value="misdiagnosis">Misdiagnosis</option>
+                                <option value="medication_error">Medication Error</option>
+                                <option value="surgical">Surgical</option>
+                                <option value="administrative">Administrative</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="reportedSeverity">Reported Severity <span class="req">*</span></label>
+                            <select id="reportedSeverity" name="reportedSeverity" required>
+                                <option value="">Select severity</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="field">
                         <label for="description">Complaint Details <span class="req">*</span></label>
                         <textarea id="description" name="description" rows="5" required
@@ -333,14 +355,6 @@
                         <div class="field-counter" id="descCounter">
                             <span id="descCount">0</span> characters — minimum 20 required
                         </div>
-                    </div>
-                    <div class="keyword-hint">
-                        Describe what happened in detail. You may use this format...
-                        <br><p>• Incident Date: [YYYY-MM-DD]</p>
-                            <p>• Facility: [name and location]</p>
-                            <p>• Complaint Type: [misdiagnosis/medication error
-                                /surgical/administrative]</p>
-                            <p>• Reported Severity: [low/medium/high]</p>
                     </div>
 
                     <!-- Validation error display -->
