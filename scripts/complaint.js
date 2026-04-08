@@ -59,7 +59,12 @@ function applyAnonymousState(value) {
 if (userInfoSection) userInfoSection.style.display = 'none';
 
 anonymousRadios.forEach(function (radio) {
+    // 'change' fires in most browsers; 'click' is a belt-and-suspenders fallback
+    // for styled radio implementations that visually hide the <input>.
     radio.addEventListener('change', function () {
+        applyAnonymousState(this.value);
+    });
+    radio.addEventListener('click', function () {
         applyAnonymousState(this.value);
     });
 });
@@ -258,18 +263,18 @@ if (form) {
             followUp:     isAnonymous ? '' : ((document.getElementById('followUp')   || {}).value || ''),
             incidentDate: document.getElementById('incidentDate').value,
             incidentTime: (document.getElementById('incidentTime') || {}).value || '',
-            healthFacility: document.getElementById('healthFacility').value, // ← key corrected (was facilityName)
-            department:   (document.getElementById('department')   || {}).value || '',
-            description:  descriptionVal,
-            timestamp:    document.getElementById('timestamp').value,
+            healthFacility:   document.getElementById('healthFacility').value,
+            department:       (document.getElementById('department') || {}).value || '',
+            complaintDetails: descriptionVal,  // ← key matches n8n 'complaintDetails' mapping
+            timestamp:        document.getElementById('timestamp').value,
         };
 
         setSubmitLoading(true);
 
         try {
-            // Production webhook — active whenever the n8n workflow is deployed.
+            // Test webhook (Herick's instance) — switch to production URL on final deploy.
             const response = await fetch(
-                'https://group2cse499.app.n8n.cloud/webhook-test/1f4557fb-1fe4-4055-b64c-96f0ca5bd258',
+                'https://dommmy2000.app.n8n.cloud/webhook-test/2ad32886-a31e-4f3a-8c29-f6f4727680de',
                 {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
