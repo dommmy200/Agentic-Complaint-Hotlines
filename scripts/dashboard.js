@@ -7,7 +7,7 @@ async function checkAuth() {
         if (token) {
         headers['Authorization'] = 'Bearer ' + token;
         } else {
-        // No token in sessionStorage — redirect immediately
+        // No token in sessionStorage — redirect immediately to Login
         window.location.href = './login.html';
         return null;
         }
@@ -60,30 +60,34 @@ if (dateEl) {
     });
 }
 
-// ── Fetch complaints (NEW) ───────────────────────────
+// ── Fetch complaints from backend ───────────────────────────
 async function fetchComplaints() {
+    const loadingEl = document.getElementById('loadingState');
+    const errorEl   = document.getElementById('errorState');
+
+    if (loadingEl) loadingEl.style.display = 'block';
+    if (errorEl)   errorEl.style.display   = 'none';
+
     try {
         const res = await fetch(API + '/api/reports');
-        console.log("👉 CALLING:", API + '/api/reports');
 
-        if (!res.ok) {
-            console.error("API error:", res.status);
-            return [];
-        }
+        if (!res.ok) throw new Error('API error: ' + res.status);
 
         const data = await res.json();
+        if (loadingEl) loadingEl.style.display = 'none';
         return Array.isArray(data) ? data : [];
 
     } catch (error) {
         console.error('Fetch error:', error);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl)   errorEl.style.display   = 'block';
         return [];
     }
 }
 
-// ── Build stats (NEW) ────────────────────────────────
+// ── Build stats from data ────────────────────────────────
 function buildStats(data) {
     const total = data.length;
-
     const percent = (count) =>
         total === 0 ? "0.0%" : ((count / total) * 100).toFixed(1) + "%";
 
@@ -109,11 +113,22 @@ function buildStats(data) {
     const minDate = dates.length ? new Date(Math.min(...dates)) : null;
     const maxDate = dates.length ? new Date(Math.max(...dates)) : null;
 
-    const byMonth = {};
+    // Build month counts with sortable keys
+    const byMonthRaw = {};
     dates.forEach(date => {
-        const month = date.toLocaleString('en-US', { month: 'long' });
-        byMonth[month] = (byMonth[month] || 0) + 1;
+        const key   = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        const label = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        if (!byMonthRaw[key]) byMonthRaw[key] = { label, count: 0 };
+        byMonthRaw[key].count++;
     });
+
+    // Sort chronologically and rebuild as label → count
+    const byMonth = Object.keys(byMonthRaw)
+        .sort()
+        .reduce((acc, key) => {
+            acc[byMonthRaw[key].label] = byMonthRaw[key].count;
+            return acc;
+        }, {});
 
     return {
         total,
@@ -134,17 +149,32 @@ function buildStats(data) {
 let charts = [];
 
 function destroyCharts() {
-    charts.forEach(chart => chart.destroy());
+    charts.forEach(c => c.destroy());
     charts = [];
 }
 
+// Bright vibrant colors for facility and category charts
+const PIE_COLORS = [
+    '#0963f3', '#f5d60b', '#23d59a', '#ef3d3d',
+    '#ba9ce5', '#06b6d4', '#f69b2d', '#f5218b',
+    '#4ade80', '#84cc16', '#a855f7', '#0ea5e9',
+    '#fb923c', '#e879f9', '#096775', '#18e5cd'
+];
+
+// Traffic light colors for priority — HIGH red, MEDIUM yellow, LOW green
+const PRIORITY_COLORS = {
+    'HIGH':   '#ef3d3d',
+    'MEDIUM': '#f5ce0b',
+    'LOW':    '#10b981',
+};
+
 function createChart(ctxId, label, dataObj, type = "bar") {
     const ctx = document.getElementById(ctxId);
-
     if (!ctx) return;
 
     const labels = Object.keys(dataObj);
-    const data = Object.values(dataObj);
+    const counts = Object.values(dataObj);
+    const isPie  = type === 'pie' || type === 'doughnut';
 
     const chart = new Chart(ctx, {
         type,
@@ -152,17 +182,43 @@ function createChart(ctxId, label, dataObj, type = "bar") {
             labels,
             datasets: [{
                 label,
-                data,
-                borderWidth: 1
+                data:            counts,
+                backgroundColor: isPie 
+                ? (ctxId === 'priorityChart'
+                    ? labels.map(l => PRIORITY_COLORS[l] || '#6b7280')
+                    : PIE_COLORS.slice(0, labels.length))
+                : 'rgba(12,31,63,0.75)',
+                borderColor:     isPie 
+                ? (ctxId === 'priorityChart'
+                    ? labels.map(l => PRIORITY_COLORS[l] || '#6b7280')
+                    : PIE_COLORS.slice(0, labels.length))
+                : '#0c1f3f',
+                borderWidth:     isPie ? 2 : 1,
+                borderRadius:    type === 'bar' ? 4 : 0,
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: type !== "bar"
+                    display:  isPie,
+                    position: 'bottom',
+                    labels:   { font: { size: 11 }, padding: 12 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct   = ((ctx.parsed / total) * 100).toFixed(1);
+                            return ` ${ctx.parsed} (${pct}%)`;
+                        }
+                    }
                 }
-            }
+            },
+            scales: type === 'bar' ? {
+                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            } : {},
         }
     });
 
@@ -171,14 +227,13 @@ function createChart(ctxId, label, dataObj, type = "bar") {
 
 function renderCharts(stats) {
     destroyCharts();
-
     createChart("facilityChart", "Facilities", stats.byFacility, "pie");
     createChart("categoryChart", "Categories", stats.byCategory, "pie");
     createChart("priorityChart", "Priority", stats.byPriority, "doughnut");
-    createChart("monthChart", "Monthly Complaints", stats.byMonth);
+    createChart("monthChart",    "Complaints",  stats.byMonth,    "bar");
 }
 
-// ── Update UI (NEW) ──────────────────────────────────
+// ── Update dashboard UI ──────────────────────────────────
 function updateDashboard(stats) {
     const set = (id, value) => {
         const el = document.getElementById(id);
@@ -193,34 +248,19 @@ function updateDashboard(stats) {
     set("statFollowUpPct", stats.followUpPct);
     set("statHigh", stats.byPriority["HIGH"] || 0);
 
-    // Lists
-    const renderList = (id, group) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        el.innerHTML = Object.entries(group)
-            .map(([key, count]) => {
-                const pct = ((count / stats.total) * 100).toFixed(1);
-                return `<li>${key}: ${count} (${pct}%)</li>`;
-            })
-            .join("");
-    };
-
-    renderList("facilityList", stats.byFacility);
-    renderList("categoryList", stats.byCategory);
-    renderList("priorityList", stats.byPriority);
-    renderList("monthList", stats.byMonth);
-
-    // Date range
     if (stats.minDate && stats.maxDate) {
-        const el = document.getElementById("dateRange");
-        if (el) {
-            el.textContent =
-                stats.minDate.toISOString().split("T")[0] +
-                " → " +
-                stats.maxDate.toISOString().split("T")[0];
-        }
+        const fmt = d => d.toISOString().split("T")[0];
+        set("dateRange", fmt(stats.minDate) + " → " + fmt(stats.maxDate));
     }
+}
+
+// ── Load and render ───────────────────────────────────
+async function loadData() {
+    const data = await fetchComplaints();
+    if (data.length === 0) return;
+    const stats = buildStats(data);
+    updateDashboard(stats);
+    renderCharts(stats);
 }
 
 // ── Init ─────────────────────────────────────────────
@@ -228,16 +268,15 @@ async function init() {
     const user = await checkAuth();
     if (!user) return;
 
-  // Show user email in nav
+    // Show user email in nav
     const navUser = document.getElementById('navUser');
     if (navUser) navUser.textContent = 'Welcome, ' + user.email;
 
-  // NEW: load real data
-    const data = await fetchComplaints();
-    const stats = buildStats(data);
+    // Load real data
+    await loadData();
 
-    updateDashboard(stats);
-    renderCharts(stats);
+    // Auto-refresh every 5 minutes
+    setInterval(loadData, 5 * 60 * 1000);
 }
 
 init();

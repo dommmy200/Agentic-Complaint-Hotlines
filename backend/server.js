@@ -34,11 +34,6 @@ app.get('/', (req, res) => {
     res.json({ status: 'SSCS backend is running' });
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
 // Admin Report
 app.get('/api/reports', async (req, res) => {
     try {
@@ -50,7 +45,12 @@ app.get('/api/reports', async (req, res) => {
         res.json(data);
 
     } catch (error) {
-        console.error("❌ ERROR:", error);
+        console.error("ERROR:", error);
         res.status(500).json({ error: "Failed to fetch reports" });
     }
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
