@@ -54,10 +54,27 @@
                 <div class="dashboard-date" id="dashboardDate"></div>
             </div>
 
+            <!-- Loading state -->
+            <div class="loading-state" id="loadingState">
+                Loading complaint data, please wait...
+            </div>
+
+            <!-- Error state -->
+            <div class="error-state" id="errorState">
+                Failed to load data. Please check your connection or try refreshing the page.
+            </div>
+
             <!-- Top KPI Cards -->
             <div class="stats-grid">
-
                 <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: document-text -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                    </div>
                     <div class="stat-card-info">
                         <span class="stat-card-label">Total Complaints</span>
                         <span class="stat-card-value" id="statTotal">—</span>
@@ -65,6 +82,14 @@
                 </div>
 
                 <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: eye-slash -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                    </div>
                     <div class="stat-card-info">
                         <span class="stat-card-label">Anonymous</span>
                         <span class="stat-card-value" id="statAnonymous">—</span>
@@ -73,6 +98,14 @@
                 </div>
 
                 <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: chat-bubble-left-right -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                        </svg>
+                    </div>
                     <div class="stat-card-info">
                         <span class="stat-card-label">Follow-up Requested</span>
                         <span class="stat-card-value" id="statFollowUp">—</span>
@@ -81,6 +114,13 @@
                 </div>
 
                 <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: exclamation-circle -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                    </div>
                     <div class="stat-card-info">
                         <span class="stat-card-label">High Priority</span>
                         <span class="stat-card-value" id="statHigh">—</span>
@@ -89,7 +129,7 @@
 
             </div>
 
-            <!-- REPORT SECTIONS -->
+            <!-- Charts Grid -->
             <div class="analytics-grid">
 
                 <!-- Facility -->
@@ -115,9 +155,17 @@
                     <h3>Complaints by Month</h3>
                     <canvas id="monthChart"></canvas>
                 </div>
-
             </div>
-
+            <!-- Date Range Banner -->
+            <div class="date-range-card">
+                <div>
+                    <div class="date-range-label">Temporal Reference — Incident Dates</div>
+                    <div class="date-range-value" id="dateRange">—</div>
+                </div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);">
+                    Auto-refreshes every 5 minutes
+                </div>
+            </div>
         </div>
     </main>
 
