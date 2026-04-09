@@ -227,20 +227,6 @@ if (form) {
             }
         }
 
-        // Validate complaint type and severity selects
-        const complaintTypeEl = document.getElementById('complaintType');
-        if (!complaintTypeEl || !complaintTypeEl.value) {
-            showFormError('Please select a Complaint Type before submitting.');
-            if (complaintTypeEl) complaintTypeEl.focus();
-            return;
-        }
-        const reportedSeverityEl = document.getElementById('reportedSeverity');
-        if (!reportedSeverityEl || !reportedSeverityEl.value) {
-            showFormError('Please select a Reported Severity before submitting.');
-            if (reportedSeverityEl) reportedSeverityEl.focus();
-            return;
-        }
-
         // Validate description length (mirrors n8n preprocess check)
         const descriptionVal = document.getElementById('description')
             ? document.getElementById('description').value.trim()
@@ -279,8 +265,6 @@ if (form) {
             incidentTime: (document.getElementById('incidentTime') || {}).value || '',
             healthFacility:   document.getElementById('healthFacility').value,
             department:       (document.getElementById('department') || {}).value || '',
-            complaintType:    complaintTypeEl.value,
-            reportedSeverity: reportedSeverityEl.value,
             complaintDetails: descriptionVal,  // ← key matches n8n 'complaintDetails' mapping
             timestamp:        document.getElementById('timestamp').value,
         };
