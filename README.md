@@ -177,22 +177,27 @@ cse499-complaint-system/
 │   └── shared-classification-agent.json # Reusable classification agent config
 │
 ├── scripts/
-│   ├── extractor.js          # Regex field extraction from complaint description
+│   ├── extractor.js          # Regex field extraction from complaint description (To be implemented)
 │   ├── preprocess.js         # AI agent user prompt template builder
-│   ├── debugger.js           # <case_data> detection and isComplete flag logic
-│   └── telegram-to-json.js   # Strips markdown fences, extracts JSON from Telegram output
+│   ├── debugger.js           # <case_data> detection and isComplete flag logic (To be implemented)
+│   ├── telegram-to-json.js   # Strips markdown fences, extracts JSON from Telegram output (To be implemented)
+│   ├── admin.js              # Validations
+│   ├── complaint.js          # Regex extraction, Form logic, webhook calls, conversation UI
+│   ├── dashboard.js          # Authenticators
+│   ├── error.js              # Error handler
 │
-├── frontend/
-│   ├── index2.html           # Main complaint form page
-│   ├── styles/
-│   │   └── complaint2.css    # Stylesheet
-│   └── scripts/
-│       └── complaint2.js     # Form logic, webhook calls, conversation UI
+├── index.html           # Main complaint form page
+├── styles/
+│   └── complaint.css    # Stylesheet
+│   └── admin.css
+│   └── dashboard.css
+│   └── error.css
+│   
+├── docs/
+│    ├── workflow-overview.json       #   
 │
-└── docs/
-    ├── architecture.md       # Full system design documentation
-    ├── setup.md              # Step-by-step n8n setup guide
-    └── api-reference.md      # Webhook payload schemas
+└── images/
+    └──  citizen.webp          # And more images...
 ```
 
 ---
