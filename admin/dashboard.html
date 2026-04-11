@@ -45,19 +45,29 @@
     <main class="dashboard">
         <div class="dashboard-inner">
 
-            <!-- Page header -->
+            <!-- Header -->
             <div class="dashboard-header">
                 <div>
-                    <p class="section-label">Overview</p>
-                    <h1 class="dashboard-title">Complaints Dashboard</h1>
+                    <p class="section-label">Analytics</p>
+                    <h1 class="dashboard-title">Complaints Report</h1>
                 </div>
                 <div class="dashboard-date" id="dashboardDate"></div>
             </div>
 
-            <!-- Stats cards -->
+            <!-- Loading state -->
+            <div class="loading-state" id="loadingState">
+                Loading complaint data, please wait...
+            </div>
+
+            <!-- Error state -->
+            <div class="error-state" id="errorState">
+                Failed to load data. Please check your connection or try refreshing the page.
+            </div>
+
+            <!-- Top KPI Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-card-icon stat-card-icon--blue">
+                    <div class="stat-card-icon">
                         <!-- Heroicons: document-text -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -72,35 +82,39 @@
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-card-icon stat-card-icon--amber">
-                        <!-- Heroicons: clock -->
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: eye-slash -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path
+                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                         </svg>
                     </div>
                     <div class="stat-card-info">
-                        <span class="stat-card-label">Pending Review</span>
-                        <span class="stat-card-value" id="statPending">—</span>
+                        <span class="stat-card-label">Anonymous</span>
+                        <span class="stat-card-value" id="statAnonymous">—</span>
+                        <span class="stat-card-sub" id="statAnonymousPct">—</span>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-card-icon stat-card-icon--green">
-                        <!-- Heroicons: check-circle -->
+                    <div class="stat-card-icon">
+                        <!-- Heroicons: chat-bubble-left-right -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path
+                                d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
                         </svg>
                     </div>
                     <div class="stat-card-info">
-                        <span class="stat-card-label">Resolved</span>
-                        <span class="stat-card-value" id="statResolved">—</span>
+                        <span class="stat-card-label">Follow-up Requested</span>
+                        <span class="stat-card-value" id="statFollowUp">—</span>
+                        <span class="stat-card-sub" id="statFollowUpPct">—</span>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-card-icon stat-card-icon--red">
+                    <div class="stat-card-icon">
                         <!-- Heroicons: exclamation-circle -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -108,87 +122,54 @@
                         </svg>
                     </div>
                     <div class="stat-card-info">
-                        <span class="stat-card-label">High Severity</span>
+                        <span class="stat-card-label">High Priority</span>
                         <span class="stat-card-value" id="statHigh">—</span>
                     </div>
                 </div>
+
             </div>
 
-            <!-- Complaints table -->
-            <div class="table-card">
-                <div class="table-card-header">
-                    <h2 class="table-card-title">Recent Complaints</h2>
-                    <span class="table-badge">Placeholder data — connect n8n to populate</span>
+            <!-- Charts Grid -->
+            <div class="analytics-grid">
+
+                <!-- Facility -->
+                <div class="card">
+                    <h3>By Health Facility</h3>
+                    <canvas id="facilityChart"></canvas>
                 </div>
 
-                <div class="table-wrap">
-                    <table class="complaints-table">
-                        <thead>
-                            <tr>
-                                <th>Case ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="complaintsBody">
-                            <!-- Placeholder rows -->
-                            <tr>
-                                <td><span class="case-id">SSCS-2604-11201</span></td>
-                                <td>Maria Gonzalez</td>
-                                <td>maria@email.com</td>
-                                <td class="td-description">Incorrect billing charges after procedure at General
-                                    Hospital.</td>
-                                <td>Apr 1, 2026</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="case-id">SSCS-2604-11202</span></td>
-                                <td>John Smith</td>
-                                <td>john@email.com</td>
-                                <td class="td-description">Misdiagnosis leading to delayed treatment for three months.
-                                </td>
-                                <td>Apr 2, 2026</td>
-                                <td><span class="status-badge status-review">Under Review</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="case-id">SSCS-2604-11203</span></td>
-                                <td>Ana Torres</td>
-                                <td>ana@email.com</td>
-                                <td class="td-description">Privacy breach — medical records shared without consent.</td>
-                                <td>Apr 3, 2026</td>
-                                <td><span class="status-badge status-resolved">Resolved</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="case-id">SSCS-2604-11204</span></td>
-                                <td>Carlos Rivera</td>
-                                <td>carlos@email.com</td>
-                                <td class="td-description">Denied access to emergency care due to insurance issues.</td>
-                                <td>Apr 3, 2026</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Category -->
+                <div class="card">
+                    <h3>By Category</h3>
+                    <canvas id="categoryChart"></canvas>
                 </div>
 
-                <div class="table-footer">
-                    <p class="table-note">
-                        <!-- Heroicons: information-circle -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                        </svg>
-                        This table will be connected to Google Sheets via n8n in the next sprint.
-                    </p>
+                <!-- Priority -->
+                <div class="card">
+                    <h3>By Priority</h3>
+                    <canvas id="priorityChart"></canvas>
+                </div>
+
+                <!-- Time -->
+                <div class="card">
+                    <h3>Complaints by Month</h3>
+                    <canvas id="monthChart"></canvas>
                 </div>
             </div>
-
+            <!-- Date Range Banner -->
+            <div class="date-range-card">
+                <div>
+                    <div class="date-range-label">Temporal Reference — Incident Dates</div>
+                    <div class="date-range-value" id="dateRange">—</div>
+                </div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);">
+                    Auto-refreshes every 5 minutes
+                </div>
+            </div>
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../scripts/admin.js"></script>
     <script src="../scripts/dashboard.js"></script>
 </body>
